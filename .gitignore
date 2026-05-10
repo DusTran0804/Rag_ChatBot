@@ -8,8 +8,7 @@ env.bak/
 venv.bak/
 
 # Project specific
-VectorDB/
-data/
+
 
 # Python
 __pycache__/
