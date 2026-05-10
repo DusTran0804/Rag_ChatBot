@@ -1,8 +1,8 @@
-# 🚀 Advanced Enterprise RAG Chatbot
+# Advanced Enterprise RAG Chatbot
 
 Hệ thống Chatbot RAG (Retrieval-Augmented Generation) thông minh, được thiết kế để xử lý đa luồng câu hỏi, hỗ trợ giao diện Web trực quan và tích hợp sâu với các mô hình ngôn ngữ tiên tiến của Google và HuggingFace.
 
-## 📊 Sơ đồ Kiến trúc Hệ thống
+## Sơ đồ Kiến trúc Hệ thống
 
 Dưới đây là sơ đồ luồng hoạt động (Workflow) của hệ thống, bao gồm quá trình Nạp dữ liệu (Offline Ingestion) và quá trình Truy vấn thời gian thực (Online Querying):
 
@@ -19,7 +19,7 @@ flowchart TD
     D1 -- Save to Qdrant --> VDB[(Vector DB)]
 
     %% Query Pipeline
-    U1((Student)) --> Q1([Query])
+    U1((Client)) --> Q1([Query])
     
     Q1 --> QT[Query Transform]
     QT --> QR[Query Router]
@@ -45,7 +45,7 @@ flowchart TD
     LLM --> ANS
 ```
 
-## 🛠 Frameworks & Toolkits Sử dụng
+## Frameworks sử dụng
 
 Dự án này được xây dựng trên một stack công nghệ hiện đại và chuyên nghiệp:
 
@@ -72,7 +72,7 @@ Dự án này được xây dựng trên một stack công nghệ hiện đại 
 
 ---
 
-## ⚙️ Cài đặt & Sử dụng (Môi trường Local)
+## Cài đặt & Sử dụng (Môi trường Local)
 
 ### 1. Chuẩn bị
 Yêu cầu: `Python 3.10+`.
@@ -106,7 +106,7 @@ python api.py
 
 ---
 
-## 🐳 Triển khai bằng Docker (Production)
+## Triển khai bằng Docker (Production)
 
 Để chạy dự án một cách chuyên nghiệp và độc lập, hãy sử dụng Docker.
 

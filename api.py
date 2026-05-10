@@ -12,7 +12,6 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Cấu hình CORS để cho phép frontend gọi API
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -21,10 +20,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Gắn các route đã định nghĩa vào app chính
 app.include_router(router, prefix="/api/v1")
 
-# Phục vụ các file tĩnh (Frontend UI)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 @app.get("/", summary="Giao diện Web Chatbot")
