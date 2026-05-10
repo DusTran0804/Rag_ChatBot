@@ -1,0 +1,14 @@
+langchain
+langchain-core
+langchain-community
+langchain-google-genai
+langchain-huggingface
+langchain-qdrant
+langchain-experimental
+llama-index
+qdrant-client
+sentence-transformers
+python-dotenv
+pydantic
+fastapi
+uvicorn
