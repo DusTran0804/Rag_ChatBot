@@ -12,7 +12,7 @@ QDRANT_PATH = os.path.join(BASE_DIR, "VectorDB")
 COLLECTION_NAME = "rag_input"
 CATEGORIES = ["ky_thuat", "doanh_nghiep", "chung"]
 
-EMBED_MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
+EMBED_MODEL_NAME = "bkai-foundation-models/vietnamese-bi-encoder"
 LLM_MODEL_NAME = "gemini-2.5-flash"
 RERANK_MODEL_NAME = "cross-encoder/ms-marco-MiniLM-L-6-v2"
 

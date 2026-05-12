@@ -17,9 +17,10 @@ fi
 echo -e "Chọn một tùy chọn:"
 echo -e "${GREEN}1)${NC} Ingest Data (Nạp dữ liệu từ thư mục /data vào VectorDB)"
 echo -e "${GREEN}2)${NC} Run Web API (Bắt đầu Web Chatbot trên http://localhost:8000)"
-echo -e "${GREEN}3)${NC} Thoát"
+echo -e "${GREEN}3)${NC} Clear VectorDB (Xóa dữ liệu cũ để đổi mô hình)"
+echo -e "${GREEN}4)${NC} Thoát"
 
-read -p "Nhập lựa chọn của bạn [1-3]: " choice
+read -p "Nhập lựa chọn của bạn [1-4]: " choice
 
 case $choice in
     1)
@@ -39,6 +40,10 @@ case $choice in
         PYTHONPATH=. python3 api.py
         ;;
     3)
+        echo -e "${RED}[!] Cảnh báo: Tất cả dữ liệu vector sẽ bị xóa.${NC}"
+        PYTHONPATH=. python3 scripts/clear_db.py
+        ;;
+    4)
         echo -e "Tạm biệt!"
         exit 0
         ;;

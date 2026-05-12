@@ -9,6 +9,8 @@ llama-index
 qdrant-client
 sentence-transformers
 python-dotenv
+unstructured[all-docs]
+numpy<2.0.0
 pydantic
 fastapi
 uvicorn
