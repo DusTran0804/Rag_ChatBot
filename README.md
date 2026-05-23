@@ -104,6 +104,24 @@ python api.py
 # Truy cập: http://localhost:8000
 ```
 
+### 4. Đánh giá hệ thống (Ragas Evaluation)
+
+Hệ thống được tích hợp sẵn công cụ đánh giá tự động bằng framework **Ragas** để đo lường độ hiệu quả của pipeline RAG qua các chỉ số:
+- **Faithfulness**: Độ trung thực của câu trả lời so với ngữ cảnh.
+- **Answer Relevancy**: Mức độ bám sát câu hỏi.
+- **Context Precision & Recall**: Độ chính xác và đầy đủ của tài liệu truy xuất.
+- **Answer Correctness**: Độ chính xác tổng thể so với đáp án chuẩn.
+
+Để tiến hành đánh giá, hãy đảm bảo bạn đã cung cấp biến `GROQ_API_KEY` trong file `.env` và chạy lệnh:
+```bash
+python evaluation/run_eval.py
+```
+*(Kết quả chi tiết và các biểu đồ trực quan như Radar Chart, Heatmap sẽ được lưu vào thư mục `evaluation/results/`)*
+
+<div align="center">
+  <img src="evaluation/results/ragas_metrics_chart.png" alt="Ragas Metrics Chart" width="800">
+</div>
+
 ---
 
 ## Triển khai bằng Docker (Production)
@@ -125,5 +143,3 @@ docker run -d -p 8000:8000 \
   rag-chatbot-app
 ```
 *Truy cập UI Chatbot tại: `http://localhost:8000`*
-# Rag_Chatbot
-# Rag_Chatbot
