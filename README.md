@@ -52,7 +52,8 @@ Dự án này được xây dựng trên một stack công nghệ hiện đại 
 ### 1. Xử lý Logic & Orchestration
 - **[LangChain](https://python.langchain.com/)**: Bộ khung lõi (Core Framework) điều phối toàn bộ luồng RAG, khởi tạo LLM, kết nối VectorDB và thiết kế Agent thông minh.
 - **[LlamaIndex](https://www.llamaindex.ai/)**: Sử dụng `SimpleDirectoryReader` chuyên biệt để đọc, bóc tách và tiền xử lý nhiều định dạng tài liệu phức tạp (PDF, Text, Hình ảnh đa phương thức).
-- **Query Transform:** Multi-step/Sub-query Decomposition & **Query Routing:** Logical Router
+- **Query Transform:** Multi-step/Sub-query Decomposition & **Query Routing:** Logical Router.
+- **Memory Contextualization (Query Rewrite)**: Hệ thống duy trì lịch sử hội thoại (Chat History) và tự động sử dụng LLM để viết lại các câu hỏi mang tính chất nối tiếp (ví dụ: chứa từ "nó", "thế còn") thành một câu hỏi độc lập và đầy đủ ngữ nghĩa trước khi đem đi xử lý, giúp bot luôn hiểu đúng bối cảnh giao tiếp.
 - **Retrieval & Re-ranking Pipeline**: Kết hợp tìm kiếm đa luồng (truy xuất các tài liệu cho toàn bộ các sub-queries từ Qdrant) cùng với cơ chế deduplication (loại bỏ trùng lặp). Sau đó, áp dụng kỹ thuật **Re-ranking** (chấm điểm lại bằng mô hình Cross-Encoder) để đánh giá chéo và chọn lọc ra những ngữ cảnh (context) có độ chính xác và tương đồng cao nhất với ý định gốc của người dùng trước khi đưa vào LLM.
 ### 2. Mô hình AI (Models)
 - **Google Gemini (`gemini-2.5-flash`)**: Làm bộ não chính (LLM) để tổng hợp, suy luận và tạo ra câu trả lời cuối cùng, tối ưu cho tốc độ và khả năng hiểu ngữ cảnh.
