@@ -1,0 +1,110 @@
+[
+  {
+    "id": 1,
+    "source_file": "Optimization_Chap04_2_new.pdf",
+    "question": "Trong Bước (k3) của thuật toán, siêu phẳng {x ∈ Rn | ⟨∇gik(xk), x − xk⟩ + gik(xk) = 0} được gọi là gì và có chức năng như thế nào?",
+    "ground_truth": "Siêu phẳng {x ∈ Rn | ⟨∇gik(xk), x − xk⟩ + gik(xk) = 0} được gọi là siêu phẳng cắt. Đây chính là siêu phẳng tách tập lồi X và điểm xk không thuộc X."
+  },
+  {
+    "id": 2,
+    "source_file": "Optimization_Chap04_2_new.pdf",
+    "question": "Khi giải hệ phương trình ∇xψ(x, α) = 0, điểm dừng x*(α) nhận được là gì và giới hạn của các thành phần của điểm dừng này khi tham số α tiến về 0+ là bao nhiêu?",
+    "ground_truth": "Khi giải hệ phương trình ∇xψ(x, α) = 0, ta nhận được điểm dừng x*(α) = (x*1(α), x*2(α))T với x*1(α) = (√1 + 2α + 3α - 1)/2 và x*2(α) = 1 + (√1 + 2α)/2. Khi tham số α > 0 và giảm dần về 0, giới hạn của các thành phần của điểm dừng là limα→0+ x*1(α) = 0 và limα→0+ x*2(α) = 1."
+  },
+  {
+    "id": 3,
+    "source_file": "Optimization_Chap02_4.pdf",
+    "question": "Theo Định lý về độ lệch bù, ý nghĩa kinh tế đối với các phương pháp sản xuất là gì khi một phương pháp được áp dụng và khi không được áp dụng?",
+    "ground_truth": "Theo Định lý về độ lệch bù, đối với các phương pháp sản xuất, nếu phương pháp thứ j được áp dụng (t∗j > 0), tổng giá trị các sản phẩm sản xuất theo phương pháp j phải vừa đúng bằng chi phí cj. Ngược lại, nếu phương pháp thứ j không được áp dụng (t∗j = 0), tổng giá trị các sản phẩm sản xuất theo phương pháp j thấp hơn chi phí cj, điều này có nghĩa là sản xuất theo phương pháp này sẽ bị lỗ."
+  },
+  {
+    "id": 4,
+    "source_file": "Optimization_Chap02_4.pdf",
+    "question": "Theo đoạn văn, mục đích của bài toán đối ngẫu là gì và nó liên quan đến việc xác định yếu tố nào để đạt được mục tiêu đó?",
+    "ground_truth": "Mục đích của bài toán đối ngẫu là xác định giá trị zi cho mỗi đơn vị sản phẩm loại i sao cho tổng giá trị toàn bộ sản phẩm theo yêu cầu của xã hội là lớn nhất."
+  },
+  {
+    "id": 5,
+    "source_file": "Optimization_Chap02_1.pdf",
+    "question": "Theo đoạn văn, nghiệm tối ưu (phương án tối ưu) được định nghĩa như thế nào?",
+    "ground_truth": "Nghiệm tối ưu (phương án tối ưu) là một nghiệm chấp nhận được x∗ ∈ D thỏa mãn f (x∗) = ⟨c, x∗⟩ ≤ f (x) = ⟨c, x⟩, với mọi x ∈ D."
+  },
+  {
+    "id": 6,
+    "source_file": "Optimization_Chap02_1.pdf",
+    "question": "Trong bài toán tối ưu hóa, làm thế nào để chuyển đổi một ràng buộc đẳng thức thành các ràng buộc bất đẳng thức?",
+    "ground_truth": "Để chuyển đổi một ràng buộc đẳng thức có dạng nXj=1 aijxj = bi, ta có thể thay thế nó bằng hai ràng buộc bất đẳng thức: nXj=1 aijxj ≥ bi và −nXj=1 aijxj ≥ −bi."
+  },
+  {
+    "id": 7,
+    "source_file": "Optimization_Chap02_3.pdf",
+    "question": "Khi giải bài toán (LP) bằng phương pháp đơn hình, để chuyển từ bảng đơn hình cuối cùng của Pha 1 sang bảng đơn hình xuất phát của Pha 2, cần thực hiện những sửa đổi nào?",
+    "ground_truth": "Bảng đơn hình đầu tiên của Pha 2 là bảng đơn hình cuối cùng ở Pha 1 nhưng với một số sửa đổi như sau: Xóa tất cả các cột tương ứng với các biến giả; Thay cột CB bởi hệ số mục tiêu cơ sở tương ứng của bài toán gốc; Thay các hệ số mục tiêu của bài toán phụ ở dòng 1 bằng hệ số mục tiêu của bài toán gốc; Nếu trong cơ sở tương ứng với phương án tối ưu của bài toán phụ (LP*) không có vector giả thì cơ sở ứng với phương án này cũng chính là cơ sở tương ứng với x0. Để có bảng đơn hình xuất phát cho bài toán ban đầu, ta chỉ cần tính giá trị hàm mục tiêu tại x0 và tính lại các ước lượng theo công thức f(x0) = Σj∈J(x0) cjx0j và Δk = Σj∈J(x0) zjkcj − ck."
+  },
+  {
+    "id": 8,
+    "source_file": "Optimization_Chap02_3.pdf",
+    "question": "Dựa vào Bảng 3 trong Pha 2 của quá trình giải bài toán gốc, hãy xác định giá trị hàm mục tiêu hiện tại và các biến cơ sở cùng với giá trị của chúng.",
+    "ground_truth": "Từ Bảng 3, giá trị hàm mục tiêu hiện tại là -82/5. Các biến cơ sở và giá trị của chúng là: A3 = 12, A4 = 0, và A2 = 7."
+  },
+  {
+    "id": 9,
+    "source_file": "Optimization_Chap03_2.pdf",
+    "question": "Thuật toán Newton thuần túy có những ưu điểm nổi bật nào khi áp dụng cho hàm toàn phương và khi điểm xuất phát đủ gần điểm dừng?",
+    "ground_truth": "Thuật toán Newton thuần túy có hai ưu điểm nổi bật: Thứ nhất, nếu f là hàm toàn phương f(x) = 1/2 xTAx − bTx + c với A đối xứng xác định dương, thuật toán sẽ cho nghiệm chỉ sau một vòng lặp. Thứ hai, nếu xuất phát đủ gần điểm dừng, thuật toán hội tụ rất nhanh (bậc hai)."
+  },
+  {
+    "id": 10,
+    "source_file": "Optimization_Chap03_2.pdf",
+    "question": "Dựa vào Bước lặp k = 3, hãy cho biết điều kiện dừng thuật toán được thỏa mãn là gì và nghiệm tìm được sau khi dừng thuật toán là bao nhiêu?",
+    "ground_truth": "Tại Bước lặp k = 3, thuật toán dừng lại vì gradient của hàm mục tiêu tại x4, tức là ∇f(x4), bằng vectơ không (0, 0, 0). Nghiệm tìm được sau khi dừng thuật toán là x* = (-1, -0.2, -0.04)."
+  },
+  {
+    "id": 11,
+    "source_file": "Optimization_Chap01.pdf",
+    "question": "Trong Quy hoạch phi tuyến, Quy hoạch lồi được định nghĩa như thế nào?",
+    "ground_truth": "Quy hoạch lồi là bài toán cực tiểu một hàm mục tiêu f(x) là hàm lồi trên tập chấp nhận được D ⊆ R^n là tập lồi."
+  },
+  {
+    "id": 12,
+    "source_file": "Optimization_Chap01.pdf",
+    "question": "Bài toán được mô tả trong đoạn văn bản yêu cầu xác định những vị trí nào?",
+    "ground_truth": "Bài toán yêu cầu xác định vị trí để xây dựng một trạm biến áp tổng để cung cấp điện cho 4 khu chung cư và vị trí (xi, yi) ∈ Ki để đặt trạm biến áp phân phối của mỗi khu chung cư Ki, i = 1, ."
+  },
+  {
+    "id": 13,
+    "source_file": "Optimization_Chap02_2.pdf",
+    "question": "Theo thuật toán đơn hình, điều kiện để phương án cực biên x0 được coi là nghiệm tối ưu là gì?",
+    "ground_truth": "Theo Bước 3 của thuật toán đơn hình, nếu tất cả các ước lượng biến ∆k ≤ 0 với mọi k không thuộc tập chỉ số cơ sở J(x0), thì x0 là nghiệm tối ưu và thuật toán sẽ dừng lại."
+  },
+  {
+    "id": 14,
+    "source_file": "Optimization_Chap02_2.pdf",
+    "question": "Dựa vào bảng đơn hình cuối cùng được cung cấp, hãy cho biết điều kiện để đạt được nghiệm tối ưu, nghiệm tối ưu là gì và giá trị tối ưu tương ứng?",
+    "ground_truth": "Dựa vào bảng đơn hình cuối cùng, điều kiện để đạt được nghiệm tối ưu là khi tất cả ∆k ≤ 0. Nghiệm tối ưu duy nhất là x∗ = (4/3, 0, 4/3, 2/3, 0, 0)^T và giá trị tối ưu fmin = 0."
+  },
+  {
+    "id": 15,
+    "source_file": "Optimization_Chap03_1.pdf",
+    "question": "Theo Định lý hội tụ, các điều kiện nào cần được thỏa mãn để mọi điểm tụ của dãy {xk} sinh bởi Thuật toán 3.1 đều có gradient của hàm f bằng 0?",
+    "ground_truth": "Theo Định lý hội tụ, các điều kiện cần được thỏa mãn là: x0 ∈ Rn, hàm f khả vi liên tục trên Rn và có tập mức dưới {x ∈ Rn | f (x) ≤ f (x0)} bị chặn. Khi đó, mọi điểm tụ x∗ của dãy {xk} sinh bởi Thuật toán 3.1 đều thỏa mãn ∇f (x∗) = 0."
+  },
+  {
+    "id": 16,
+    "source_file": "Optimization_Chap03_1.pdf",
+    "question": "Bài toán quy hoạch phi tuyến không ràng buộc (P) được định nghĩa như thế nào và hàm mục tiêu f trong bài toán này có những tính chất gì theo đoạn văn?",
+    "ground_truth": "Bài toán quy hoạch phi tuyến không ràng buộc (P) được định nghĩa là min f(x) v.đ.k. x ∈ Rn. Hàm mục tiêu f trong bài toán này là hàm phi tuyến và được xác định, khả vi trên Rn."
+  },
+  {
+    "id": 17,
+    "source_file": "Optimization_Chap04_1.pdf",
+    "question": "Chương 4 của môn Cơ sở Tối ưu hóa, với tiêu đề 'Quy hoạch phi tuyến có ràng buộc', bao gồm những nội dung chính nào?",
+    "ground_truth": "Chương 4: Quy hoạch phi tuyến có ràng buộc bao gồm các nội dung chính sau: Điều kiện tối ưu, Định lý Karush–Kuhn–Tucker (KKT), Phương pháp nhân tử Lagrange, Phương pháp tuyến tính hóa, Phương pháp hướng có thể, Phương pháp Frank-Wolfe và Phương pháp hàm phạt."
+  },
+  {
+    "id": 18,
+    "source_file": "Optimization_Chap04_1.pdf",
+    "question": "Theo Định lý về điều kiện tối ưu cơ bản, điều kiện cần để x* là cực tiểu địa phương của bài toán min{f(x) : x ∈ X} là gì, và điều kiện để x* là cực tiểu địa phương chặt là gì?",
+    "ground_truth": "Theo Định lý về điều kiện tối ưu cơ bản: (i) Nếu x* ∈ X là cực tiểu địa phương của bài toán min{f(x) : x ∈ X} thì ⟨∇f(x*), v⟩ ≥ 0 ∀v ∈ T(X, x*). (ii) Nếu x* ∈ X thỏa mãn ⟨∇f(x*), v⟩ > 0 ∀v ∈ T(X, x*) \\ {0}, thì x* là cực tiểu địa phương chặt."
+  }
+]
