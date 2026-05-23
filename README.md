@@ -56,7 +56,7 @@ Dự án này được xây dựng trên một stack công nghệ hiện đại 
 ### 2. Mô hình AI (Models)
 - **Google Gemini (`gemini-2.5-flash`)**: Làm bộ não chính (LLM) để tổng hợp, suy luận và tạo ra câu trả lời cuối cùng, tối ưu cho tốc độ và khả năng hiểu ngữ cảnh.
 - **HuggingFace Sentence-Transformers**: 
-  - **Embedding**: Sử dụng `all-MiniLM-L6-v2` để chuyển đổi văn bản thành vector (384 chiều).
+   - **Embedding**: Sử dụng `bkai-foundation-models/vietnamese-bi-encoder` (mô hình Bi-Encoder tối ưu cho tiếng Việt) để chuyển đổi văn bản thành vector (768 chiều).
   - **Re-ranking**: Sử dụng Cross-Encoder (`ms-marco-MiniLM-L-6-v2`) để chấm điểm và sắp xếp lại mức độ liên quan của các tài liệu sau khi Retrieval, tăng tính chính xác tuyệt đối.
 
 ### 3. Cơ sở dữ liệu Vector (Vector Database)
