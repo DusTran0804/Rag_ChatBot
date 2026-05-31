@@ -6,7 +6,7 @@ from langchain_community.document_loaders import (
     CSVLoader,
     UnstructuredMarkdownLoader
 )
-from langchain_experimental.text_splitter import SemanticChunker
+
 from langchain_qdrant import QdrantVectorStore
 from qdrant_client import QdrantClient
 from qdrant_client.http import models
@@ -46,7 +46,8 @@ def load_document():
     if not langchain_docs:
         return None
 
-    # 2. Chunking
+    from langchain_experimental.text_splitter import SemanticChunker
+    
     embeddings = get_embeddings()
     semantic_chunker = SemanticChunker(
         embeddings,

@@ -26,8 +26,7 @@ LLM_MODEL_NAME = "llama-3.3-70b-versatile"
 RERANK_MODEL_NAME = "cross-encoder/ms-marco-MiniLM-L-6-v2"
 
 def get_embeddings():
-    if IS_RENDER:
-        return GoogleGenerativeAIEmbeddings(model="models/gemini-embedding-2", output_dimensionality=768)
+    from langchain_huggingface import HuggingFaceEmbeddings
     return HuggingFaceEmbeddings(model_name=EMBED_MODEL_NAME)
 
 
