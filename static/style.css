@@ -108,16 +108,36 @@ body {
     box-shadow: 0 0 8px #10b981;
 }
 
-.header-actions button {
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.header-actions button, .header-actions .dashboard-link {
     background: transparent;
     border: none;
     color: var(--text-muted);
     cursor: pointer;
-    transition: color 0.3s;
+    transition: color 0.3s, transform 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    text-decoration: none;
+}
+
+.header-actions .dashboard-link span {
+    font-size: 0.9rem;
+    font-weight: 500;
 }
 
 .header-actions button:hover {
     color: #ef4444;
+}
+
+.header-actions .dashboard-link:hover {
+    color: #2563eb;
+    transform: translateY(-1px);
 }
 
 .chat-box {

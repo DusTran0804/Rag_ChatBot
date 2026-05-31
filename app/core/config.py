@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_groq import ChatGroq
 from langchain_huggingface import HuggingFaceEmbeddings
 
 load_dotenv()
@@ -11,9 +11,10 @@ QDRANT_PATH = os.path.join(BASE_DIR, "VectorDB")
 
 COLLECTION_NAME = "rag_input"
 CATEGORIES = ["ky_thuat", "doanh_nghiep", "chung"]
+SUPABASE_DATABASE_URL = os.getenv("SUPABASE_DATABASE_URL")
 
 EMBED_MODEL_NAME = "bkai-foundation-models/vietnamese-bi-encoder"
-LLM_MODEL_NAME = "gemini-2.5-flash"
+LLM_MODEL_NAME = "llama-3.3-70b-versatile"
 RERANK_MODEL_NAME = "cross-encoder/ms-marco-MiniLM-L-6-v2"
 
 def get_embeddings():
@@ -21,11 +22,29 @@ def get_embeddings():
 
 
 def get_llm(temperature=0.2):
-    api_key = os.getenv("GOOGLE_API_KEY")
-    return ChatGoogleGenerativeAI(
+    api_key = os.getenv("GROQ_API_KEY")
+    return ChatGroq(
         model=LLM_MODEL_NAME,
         temperature=temperature,
-        google_api_key=api_key
+        groq_api_key=api_key,
+        max_retries=10
     )
 
 shared_llm = get_llm()
+
+def invoke_chain_with_retry(chain, input_data, max_retries=10, initial_delay=5.0):
+    import time
+    import logging
+    logger = logging.getLogger(__name__)
+    delay = initial_delay
+    for attempt in range(1, max_retries + 1):
+        try:
+            return chain.invoke(input_data)
+        except Exception as e:
+            err_msg = str(e)
+            if attempt == max_retries:
+                logger.error(f"Failed to invoke chain after {max_retries} attempts: {e}")
+                raise e
+            logger.warning(f"[Attempt {attempt}/{max_retries}] LLM invoke error: {err_msg}. Retrying in {delay} seconds...")
+            time.sleep(delay)
+            delay = min(delay * 2, 60.0)

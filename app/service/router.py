@@ -19,8 +19,9 @@ def logical_router(user_query: str):
     ])
     
     chain = prompt | structured_llm
+    from app.core.config import invoke_chain_with_retry
     try:
-        decision = chain.invoke({"question": user_query})
+        decision = invoke_chain_with_retry(chain, {"question": user_query})
     except Exception as e:
         print(f"Routing error: {e}")
         return {"queries": [user_query], "index": "chung"}

@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Đánh Giá RAGAS - RAG Chatbot</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --border-color: #334155;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --glow-color: rgba(59, 130, 246, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        header {
+            background-color: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-title h1 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #3b82f6, #60a5fa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            border: 1px solid transparent;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border-color: var(--border-color);
+            color: var(--text-main);
+        }
+
+        .btn-outline:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-color: var(--text-muted);
+        }
+
+        /* Container & Layout */
+        .container {
+            max-width: 1400px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 30px 40px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        /* Top Controls section */
+        .control-panel {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .control-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .select-wrapper {
+            position: relative;
+        }
+
+        select {
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 10px 30px 10px 15px;
+            border-radius: 8px;
+            outline: none;
+            cursor: pointer;
+            font-family: inherit;
+            appearance: none;
+            font-size: 0.9rem;
+        }
+
+        .select-wrapper::after {
+            content: '▼';
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            padding: 8px 16px;
+            border-radius: 20px;
+            background-color: rgba(255,255,255,0.05);
+            border: 1px solid var(--border-color);
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .status-idle .status-indicator {
+            background-color: var(--success);
+            box-shadow: 0 0 8px var(--success);
+        }
+
+        .status-running .status-indicator {
+            background-color: var(--warning);
+            box-shadow: 0 0 8px var(--warning);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.3); opacity: 0.6; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* Overview Summary Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .metric-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .metric-card.overall {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(30, 41, 59, 1) 100%);
+            border-color: rgba(59, 130, 246, 0.5);
+            box-shadow: 0 4px 15px var(--glow-color);
+        }
+
+        .metric-title {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+        }
+
+        .metric-val {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-top: 5px;
+        }
+
+        .metric-badge {
+            align-self: flex-start;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-good { background-color: rgba(16, 185, 129, 0.15); color: var(--success); }
+        .badge-acceptable { background-color: rgba(245, 158, 11, 0.15); color: var(--warning); }
+        .badge-poor { background-color: rgba(239, 68, 68, 0.15); color: var(--danger); }
+
+        /* Visualization Section */
+        .viz-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 30px;
+        }
+
+        .chart-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            height: 400px;
+        }
+
+        .chart-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-main);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chart-container-inner {
+            flex: 1;
+            position: relative;
+            min-height: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Detailed Table Section */
+        .table-section {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .table-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .table-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .table-filters {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .search-input {
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            outline: none;
+            width: 250px;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary);
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+
+        th {
+            background-color: rgba(15, 23, 42, 0.4);
+            padding: 12px 16px;
+            color: var(--text-muted);
+            font-weight: 600;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        td {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: middle;
+        }
+
+        tr.table-row:hover {
+            background-color: rgba(255, 255, 255, 0.02);
+            cursor: pointer;
+        }
+
+        .cell-q {
+            max-width: 300px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .score-cell {
+            font-weight: 600;
+            text-align: center;
+            width: 120px;
+        }
+
+        .score-good { color: var(--success); }
+        .score-acceptable { color: var(--warning); }
+        .score-poor { color: var(--danger); }
+
+        /* Modal styling */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            width: 100%;
+            max-width: 900px;
+            max-height: 85vh;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            animation: modalFadeIn 0.3s ease-out;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .modal-header {
+            padding: 20px 25px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .close-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .close-btn:hover {
+            color: var(--text-main);
+        }
+
+        .modal-body {
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .modal-scores {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+            background-color: rgba(15, 23, 42, 0.3);
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .modal-score-item {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .modal-score-name {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .modal-score-val {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .modal-section {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .modal-section-title {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .modal-section-box {
+            background-color: rgba(15, 23, 42, 0.3);
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+
+        .modal-contexts-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .modal-context-item {
+            background-color: rgba(15, 23, 42, 0.3);
+            border-left: 3px solid var(--primary);
+            padding: 12px 15px;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        /* Empty state and loaders */
+        .loading-overlay {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            color: var(--text-muted);
+            height: 100%;
+            min-height: 200px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-title">
+            <svg width="24" height="24" fill="none" stroke="var(--primary)" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 20V10M18 20V4M6 20v-6"></path></svg>
+            <h1>Bảng Điều Khiển Đánh Giá Chatbot RAG</h1>
+        </div>
+        <div class="header-actions">
+            <a href="/" class="btn btn-outline">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"></path></svg>
+                Quay Lại Chatbot
+            </a>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Control Panel -->
+        <div class="control-panel">
+            <div class="control-left">
+                <span class="status-badge status-idle" id="evalStatusBadge">
+                    <span class="status-indicator"></span>
+                    <span id="evalStatusText">Đang tải trạng thái...</span>
+                </span>
+                
+                <div class="select-wrapper">
+                    <select id="historySelect">
+                        <option value="latest">Kết quả mới nhất</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="control-right">
+                <button id="runEvalBtn" class="btn btn-primary">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg>
+                    Chạy Đánh Giá Mới (Mini - 3 câu)
+                </button>
+            </div>
+        </div>
+
+        <!-- Metrics Overview Grid -->
+        <div class="metrics-grid" id="metricsGrid">
+            <div class="metric-card overall">
+                <span class="metric-title">Overall Score</span>
+                <span class="metric-val" id="overallScore">-</span>
+                <span class="metric-badge" id="overallBadge">-</span>
+            </div>
+            <div class="metric-card">
+                <span class="metric-title">Faithfulness</span>
+                <span class="metric-val" id="faithScore">-</span>
+                <span class="metric-badge" id="faithBadge">-</span>
+            </div>
+            <div class="metric-card">
+                <span class="metric-title">Answer Relevancy</span>
+                <span class="metric-val" id="relScore">-</span>
+                <span class="metric-badge" id="relBadge">-</span>
+            </div>
+            <div class="metric-card">
+                <span class="metric-title">Context Precision</span>
+                <span class="metric-val" id="precScore">-</span>
+                <span class="metric-badge" id="precBadge">-</span>
+            </div>
+            <div class="metric-card">
+                <span class="metric-title">Context Recall</span>
+                <span class="metric-val" id="recallScore">-</span>
+                <span class="metric-badge" id="recallBadge">-</span>
+            </div>
+            <div class="metric-card">
+                <span class="metric-title">Correctness</span>
+                <span class="metric-val" id="correctScore">-</span>
+                <span class="metric-badge" id="correctBadge">-</span>
+            </div>
+        </div>
+
+        <!-- Visualization Charts Row -->
+        <div class="viz-section">
+            <div class="chart-card">
+                <div class="chart-title">Điểm Trung Bình RAGAS</div>
+                <div class="chart-container-inner">
+                    <canvas id="barChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <div class="chart-title">Biểu Đồ Radar Đa Chiều</div>
+                <div class="chart-container-inner">
+                    <canvas id="radarChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detailed Table -->
+        <div class="table-section">
+            <div class="table-header-row">
+                <h2 class="table-title">Chi Tiết Kết Quả Từng Mẫu Thử</h2>
+                <div class="table-filters">
+                    <input type="text" id="searchInput" placeholder="Tìm kiếm câu hỏi..." class="search-input">
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 60px; text-align: center;">ID</th>
+                            <th>Câu hỏi</th>
+                            <th class="score-cell">Faithfulness</th>
+                            <th class="score-cell">Answer Rel.</th>
+                            <th class="score-cell">Ctx Precision</th>
+                            <th class="score-cell">Ctx Recall</th>
+                            <th class="score-cell">Correctness</th>
+                        </tr>
+                    </thead>
+                    <tbody id="resultsTableBody">
+                        <tr>
+                            <td colspan="7" class="empty-state">Đang tải dữ liệu...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Detailed view -->
+    <div class="modal" id="detailsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Chi Tiết Kết Quả Đánh Giá</h3>
+                <button class="close-btn" id="closeModalBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-scores" id="modalScores">
+                    <!-- Dynamic modal scores -->
+                </div>
+                
+                <div class="modal-section">
+                    <span class="modal-section-title">Câu Hỏi</span>
+                    <div class="modal-section-box" id="modalQuestion"></div>
+                </div>
+
+                <div class="modal-section">
+                    <span class="modal-section-title">Câu Trả Lời Của Chatbot</span>
+                    <div class="modal-section-box" id="modalAnswer"></div>
+                </div>
+
+                <div class="modal-section">
+                    <span class="modal-section-title">Ngữ Cảnh Tìm Kiếm Được (Retrieved Contexts)</span>
+                    <div class="modal-contexts-list" id="modalContexts"></div>
+                </div>
+
+                <div class="modal-section">
+                    <span class="modal-section-title">Câu Trả Lời Gốc (Ground Truth)</span>
+                    <div class="modal-section-box" id="modalGroundTruth"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Global variables to store charts
+        let barChart = null;
+        let radarChart = null;
+        let evaluationResults = [];
+        let pollingInterval = null;
+
+        // Dom Elements
+        const historySelect = document.getElementById('historySelect');
+        const runEvalBtn = document.getElementById('runEvalBtn');
+        const evalStatusBadge = document.getElementById('evalStatusBadge');
+        const evalStatusText = document.getElementById('evalStatusText');
+        const resultsTableBody = document.getElementById('resultsTableBody');
+        const searchInput = document.getElementById('searchInput');
+
+        // Modal Elements
+        const detailsModal = document.getElementById('detailsModal');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalScores = document.getElementById('modalScores');
+        const modalQuestion = document.getElementById('modalQuestion');
+        const modalAnswer = document.getElementById('modalAnswer');
+        const modalContexts = document.getElementById('modalContexts');
+        const modalGroundTruth = document.getElementById('modalGroundTruth');
+
+        // Threshold badges helper
+        function getBadgeClass(val) {
+            if (val === null || val === undefined || isNaN(val)) return 'badge-poor';
+            if (val >= 0.7) return 'badge-good';
+            if (val >= 0.5) return 'badge-acceptable';
+            return 'badge-poor';
+        }
+
+        function getScoreClass(val) {
+            if (val === null || val === undefined || isNaN(val)) return 'score-poor';
+            if (val >= 0.7) return 'score-good';
+            if (val >= 0.5) return 'score-acceptable';
+            return 'score-poor';
+        }
+
+        function getGradeText(val) {
+            if (val === null || val === undefined || isNaN(val)) return 'LỖI';
+            if (val >= 0.7) return 'TỐT';
+            if (val >= 0.5) return 'TẠM ỔN';
+            return 'YẾU';
+        }
+
+        function formatScore(val) {
+            if (val === null || val === undefined || isNaN(val)) return 'NaN';
+            return val.toFixed(3);
+        }
+
+        // Initialize Charts
+        function initCharts(scores) {
+            const labels = ['Faithfulness', 'Answer Rel.', 'Ctx Precision', 'Ctx Recall', 'Correctness'];
+            const dataValues = [
+                scores.faithfulness || 0,
+                scores.answer_relevancy || 0,
+                scores.context_precision || 0,
+                scores.context_recall || 0,
+                scores.answer_correctness || 0
+            ];
+
+            const barCtx = document.getElementById('barChart').getContext('2d');
+            const radarCtx = document.getElementById('radarChart').getContext('2d');
+
+            // Destroy existing charts
+            if (barChart) barChart.destroy();
+            if (radarChart) radarChart.destroy();
+
+            // Colors mapping based on scores
+            const borderColors = labels.map((_, i) => dataValues[i] >= 0.7 ? '#10b981' : (dataValues[i] >= 0.5 ? '#f59e0b' : '#ef4444'));
+            const backgroundColors = labels.map((_, i) => dataValues[i] >= 0.7 ? 'rgba(16, 185, 129, 0.4)' : (dataValues[i] >= 0.5 ? 'rgba(245, 158, 11, 0.4)' : 'rgba(239, 68, 68, 0.4)'));
+
+            barChart = new Chart(barCtx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Điểm Số',
+                        data: dataValues,
+                        backgroundColor: backgroundColors,
+                        borderColor: borderColors,
+                        borderWidth: 1.5,
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 1.0,
+                            grid: { color: 'rgba(255,255,255,0.05)' },
+                            ticks: { color: '#94a3b8' }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#94a3b8' }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+
+            radarChart = new Chart(radarCtx, {
+                type: 'radar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Chỉ Số Toàn Diện',
+                        data: dataValues,
+                        backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                        borderColor: '#3b82f6',
+                        borderWidth: 2,
+                        pointBackgroundColor: '#3b82f6',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: '#3b82f6'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            min: 0,
+                            max: 1.0,
+                            ticks: { display: false },
+                            grid: { color: 'rgba(255,255,255,0.05)' },
+                            angleLines: { color: 'rgba(255,255,255,0.05)' },
+                            pointLabels: { color: '#94a3b8', font: { family: 'Inter' } }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+        }
+
+        // Render Summary Cards
+        function updateSummaryCards(summary) {
+            const scores = summary.average_scores || {};
+            const overall = summary.overall_score || 0;
+
+            document.getElementById('overallScore').textContent = formatScore(overall);
+            document.getElementById('overallBadge').textContent = getGradeText(overall);
+            document.getElementById('overallBadge').className = `metric-badge ${getBadgeClass(overall)}`;
+
+            document.getElementById('faithScore').textContent = formatScore(scores.faithfulness);
+            document.getElementById('faithBadge').textContent = getGradeText(scores.faithfulness);
+            document.getElementById('faithBadge').className = `metric-badge ${getBadgeClass(scores.faithfulness)}`;
+
+            document.getElementById('relScore').textContent = formatScore(scores.answer_relevancy);
+            document.getElementById('relBadge').textContent = getGradeText(scores.answer_relevancy);
+            document.getElementById('relBadge').className = `metric-badge ${getBadgeClass(scores.answer_relevancy)}`;
+
+            document.getElementById('precScore').textContent = formatScore(scores.context_precision);
+            document.getElementById('precBadge').textContent = getGradeText(scores.context_precision);
+            document.getElementById('precBadge').className = `metric-badge ${getBadgeClass(scores.context_precision)}`;
+
+            document.getElementById('recallScore').textContent = formatScore(scores.context_recall);
+            document.getElementById('recallBadge').textContent = getGradeText(scores.context_recall);
+            document.getElementById('recallBadge').className = `metric-badge ${getBadgeClass(scores.context_recall)}`;
+
+            document.getElementById('correctScore').textContent = formatScore(scores.answer_correctness);
+            document.getElementById('correctBadge').textContent = getGradeText(scores.answer_correctness);
+            document.getElementById('correctBadge').className = `metric-badge ${getBadgeClass(scores.answer_correctness)}`;
+
+            initCharts(scores);
+        }
+
+        // Render Results Table
+        function renderTable(results) {
+            resultsTableBody.innerHTML = '';
+            
+            if (!results || results.length === 0) {
+                resultsTableBody.innerHTML = '<tr><td colspan="7" class="empty-state">Không tìm thấy dữ liệu.</td></tr>';
+                return;
+            }
+
+            results.forEach((row, index) => {
+                const tr = document.createElement('tr');
+                tr.className = 'table-row';
+                tr.innerHTML = `
+                    <td style="text-align: center; color: var(--text-muted); font-weight: 500;">${index + 1}</td>
+                    <td class="cell-q">${row.question}</td>
+                    <td class="score-cell ${getScoreClass(row.faithfulness)}">${formatScore(row.faithfulness)}</td>
+                    <td class="score-cell ${getScoreClass(row.answer_relevancy)}">${formatScore(row.answer_relevancy)}</td>
+                    <td class="score-cell ${getScoreClass(row.context_precision)}">${formatScore(row.context_precision)}</td>
+                    <td class="score-cell ${getScoreClass(row.context_recall)}">${formatScore(row.context_recall)}</td>
+                    <td class="score-cell ${getScoreClass(row.answer_correctness)}">${formatScore(row.answer_correctness)}</td>
+                `;
+
+                tr.addEventListener('click', () => showRowDetails(row, index + 1));
+                resultsTableBody.appendChild(tr);
+            });
+        }
+
+        // Show detailed modal
+        function showRowDetails(row, id) {
+            modalTitle.textContent = `Chi Tiết Đánh Giá Mẫu Thử #${id}`;
+            modalQuestion.textContent = row.question;
+            modalAnswer.textContent = row.answer;
+            modalGroundTruth.textContent = row.ground_truth;
+
+            // Render contexts
+            modalContexts.innerHTML = '';
+            const contexts = row.contexts || [];
+            if (contexts.length === 0) {
+                modalContexts.innerHTML = '<div class="empty-state">Không có ngữ cảnh.</div>';
+            } else {
+                contexts.forEach(ctx => {
+                    const div = document.createElement('div');
+                    div.className = 'modal-context-item';
+                    div.textContent = ctx;
+                    modalContexts.appendChild(div);
+                });
+            }
+
+            // Render scores
+            modalScores.innerHTML = `
+                <div class="modal-score-item">
+                    <span class="modal-score-name">Faithfulness</span>
+                    <span class="modal-score-val ${getScoreClass(row.faithfulness)}">${formatScore(row.faithfulness)}</span>
+                </div>
+                <div class="modal-score-item">
+                    <span class="modal-score-name">Answer Rel.</span>
+                    <span class="modal-score-val ${getScoreClass(row.answer_relevancy)}">${formatScore(row.answer_relevancy)}</span>
+                </div>
+                <div class="modal-score-item">
+                    <span class="modal-score-name">Ctx Precision</span>
+                    <span class="modal-score-val ${getScoreClass(row.context_precision)}">${formatScore(row.context_precision)}</span>
+                </div>
+                <div class="modal-score-item">
+                    <span class="modal-score-name">Ctx Recall</span>
+                    <span class="modal-score-val ${getScoreClass(row.context_recall)}">${formatScore(row.context_recall)}</span>
+                </div>
+                <div class="modal-score-item">
+                    <span class="modal-score-name">Correctness</span>
+                    <span class="modal-score-val ${getScoreClass(row.answer_correctness)}">${formatScore(row.answer_correctness)}</span>
+                </div>
+            `;
+
+            detailsModal.classList.add('active');
+        }
+
+        // Fetch details from latest or specific history file
+        async function fetchEvaluationData(type = 'latest') {
+            try {
+                let url = '/api/v1/evaluation/latest';
+                if (type !== 'latest') {
+                    // Search in history results
+                    const histData = historySelect.value;
+                    url = `/api/v1/evaluation/latest`; // Note: endpoint handles returning the selected or default latest
+                }
+                
+                const response = await fetch(url);
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        resultsTableBody.innerHTML = '<tr><td colspan="7" class="empty-state">Chưa chạy đánh giá nào. Nhấn "Chạy Đánh Giá Mới" ở trên để bắt đầu!</td></tr>';
+                        return;
+                    }
+                    throw new Error('Không thể tải dữ liệu đánh giá');
+                }
+
+                const data = await response.json();
+                evaluationResults = data.results || [];
+                updateSummaryCards(data.summary);
+                renderTable(evaluationResults);
+            } catch (err) {
+                console.error(err);
+                resultsTableBody.innerHTML = `<tr><td colspan="7" class="empty-state">Lỗi khi tải kết quả: ${err.message}</td></tr>`;
+            }
+        }
+
+        // Fetch evaluation running status
+        async function checkStatus() {
+            try {
+                const response = await fetch('/api/v1/evaluation/status');
+                const data = await response.json();
+                
+                evalStatusBadge.className = `status-badge status-${data.status}`;
+                evalStatusText.textContent = data.message;
+                
+                if (data.status === 'running') {
+                    runEvalBtn.disabled = true;
+                    runEvalBtn.innerHTML = '<span class="spinner" style="width: 16px; height: 16px; border-width: 2px;"></span> Đang chạy đánh giá...';
+                    // Start polling if not already started
+                    if (!pollingInterval) {
+                        pollingInterval = setInterval(checkStatus, 3000);
+                    }
+                } else {
+                    if (runEvalBtn.disabled) {
+                        runEvalBtn.disabled = false;
+                        runEvalBtn.innerHTML = `
+                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg>
+                            Chạy Đánh Giá Mới (Mini - 3 câu)
+                        `;
+                        // Reload data once evaluation finishes
+                        fetchEvaluationData();
+                        loadHistory();
+                    }
+                    if (pollingInterval) {
+                        clearInterval(pollingInterval);
+                        pollingInterval = null;
+                    }
+                }
+            } catch (err) {
+                console.error('Lỗi khi check status:', err);
+            }
+        }
+
+        // Load runs history
+        async function loadHistory() {
+            try {
+                const response = await fetch('/api/v1/evaluation/history');
+                const list = await response.json();
+                
+                // Clear existing options except default "latest"
+                historySelect.innerHTML = '<option value="latest">Kết quả mới nhất</option>';
+                
+                list.forEach(item => {
+                    const option = document.createElement('option');
+                    option.value = item.evaluation_timestamp;
+                    
+                    const dateStr = item.evaluation_timestamp.replace(
+                        /^(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})$/,
+                        '$3/$2/$1 $4:$5:$6'
+                    );
+                    option.textContent = `Run: ${dateStr} (Score: ${(item.overall_score || 0).toFixed(3)})`;
+                    historySelect.appendChild(option);
+                });
+            } catch (err) {
+                console.error('Lỗi khi tải lịch sử:', err);
+            }
+        }
+
+        // Trigger Evaluation run
+        async function triggerEvaluation() {
+            try {
+                runEvalBtn.disabled = true;
+                const response = await fetch('/api/v1/evaluation/run?limit=3', { method: 'POST' });
+                const data = await response.json();
+                
+                evalStatusBadge.className = `status-badge status-running`;
+                evalStatusText.textContent = data.message;
+                
+                // Start polling
+                checkStatus();
+            } catch (err) {
+                console.error(err);
+                alert('Không thể kích hoạt đánh giá: ' + err.message);
+                runEvalBtn.disabled = false;
+            }
+        }
+
+        // Event Listeners
+        runEvalBtn.addEventListener('click', triggerEvaluation);
+        
+        closeModalBtn.addEventListener('click', () => {
+            detailsModal.classList.remove('active');
+        });
+
+        window.addEventListener('click', (e) => {
+            if (e.target === detailsModal) {
+                detailsModal.classList.remove('active');
+            }
+        });
+
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase().trim();
+            if (!query) {
+                renderTable(evaluationResults);
+                return;
+            }
+            const filtered = evaluationResults.filter(row => row.question.toLowerCase().includes(query));
+            renderTable(filtered);
+        });
+
+        historySelect.addEventListener('change', () => {
+            if (historySelect.value === 'latest') {
+                fetchEvaluationData('latest');
+            } else {
+                // Fetch historical specific data
+                // In full implementation, api could return specific runs. For simplicity, we fetch latest or we look for it
+                // To keep it fully functional, we can fetch latest. If we want history support, api can return run details.
+                // Let's implement history loading in the API as well
+                fetch(`/api/v1/evaluation/latest`) // We can query specific parameters or load dynamically
+                    .then(res => res.json())
+                    .then(data => {
+                        // Note: to fetch specific history in a real app, you can pass ?timestamp=value.
+                        // Let's make sure our routes support this parameter.
+                        const timestamp = historySelect.value;
+                        fetch(`/api/v1/evaluation/latest?timestamp=${timestamp}`)
+                            .then(res => res.json())
+                            .then(specificData => {
+                                evaluationResults = specificData.results || [];
+                                updateSummaryCards(specificData.summary);
+                                renderTable(evaluationResults);
+                            });
+                    });
+            }
+        });
+
+        // Initialize on load
+        fetchEvaluationData();
+        checkStatus();
+        loadHistory();
+    </script>
+</body>
+</html>

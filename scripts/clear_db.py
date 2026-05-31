@@ -5,8 +5,6 @@ from qdrant_client import QdrantClient
 
 def clear_vector_db():
     print(f"Checking Qdrant database at: {QDRANT_PATH}")
-    
-    # Method 1: Delete via Client (Cleaner if Qdrant is running or using local path)
     try:
         client = QdrantClient(path=QDRANT_PATH)
         all_collections = CATEGORIES + [COLLECTION_NAME]
@@ -19,8 +17,6 @@ def clear_vector_db():
                 print(f"Collection {coll} does not exist.")
     except Exception as e:
         print(f"Error deleting collections via client: {e}")
-        
-    # Method 2: Force delete the storage directory if client method is not enough
     if os.path.exists(QDRANT_PATH):
         print(f"Removing storage directory: {QDRANT_PATH}")
         try:

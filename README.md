@@ -52,6 +52,7 @@ Dự án này được xây dựng trên một stack công nghệ hiện đại 
 ### 1. Xử lý Logic & Orchestration
 - **[LangChain](https://python.langchain.com/)**: Bộ khung lõi (Core Framework) điều phối toàn bộ luồng RAG, khởi tạo LLM, kết nối VectorDB và thiết kế Agent thông minh.
 - **[LlamaIndex](https://www.llamaindex.ai/)**: Sử dụng `SimpleDirectoryReader` chuyên biệt để đọc, bóc tách và tiền xử lý nhiều định dạng tài liệu phức tạp (PDF, Text, Hình ảnh đa phương thức).
+<<<<<<< HEAD
 - **Query Transform:** Multi-step/Sub-query Decomposition & **Query Routing:** Logical Router.
 - **Memory Contextualization (Query Rewrite)**: Hệ thống duy trì lịch sử hội thoại (Chat History) và tự động sử dụng LLM để viết lại các câu hỏi mang tính chất nối tiếp (ví dụ: chứa từ "nó", "thế còn") thành một câu hỏi độc lập và đầy đủ ngữ nghĩa trước khi đem đi xử lý, giúp bot luôn hiểu đúng bối cảnh giao tiếp.
 - **Retrieval & Re-ranking Pipeline**: Kết hợp tìm kiếm đa luồng (truy xuất các tài liệu cho toàn bộ các sub-queries từ Qdrant) cùng với cơ chế deduplication (loại bỏ trùng lặp). Sau đó, áp dụng kỹ thuật **Re-ranking** (chấm điểm lại bằng mô hình Cross-Encoder) để đánh giá chéo và chọn lọc ra những ngữ cảnh (context) có độ chính xác và tương đồng cao nhất với ý định gốc của người dùng trước khi đưa vào LLM.
@@ -59,6 +60,18 @@ Dự án này được xây dựng trên một stack công nghệ hiện đại 
 - **Groq LLaMA 3.3 (`llama-3.3-70b-versatile`)**: Làm bộ não chính (LLM) để tổng hợp, suy luận và tạo ra câu trả lời cuối cùng, tối ưu cho tốc độ siêu tốc và khả năng hiểu ngữ cảnh vượt trội thông qua API của Groq.
 - **HuggingFace Sentence-Transformers**: 
    - **Embedding**: Sử dụng `bkai-foundation-models/vietnamese-bi-encoder` (mô hình Bi-Encoder tối ưu cho tiếng Việt) để chuyển đổi văn bản thành vector (768 chiều).
+=======
+- **Memory Contextualization (Query Rewrite)**: Hệ thống duy trì lịch sử hội thoại (Chat History) và tự động sử dụng LLM để viết lại các câu hỏi mang tính chất nối tiếp (ví dụ: chứa từ "nó", "thế còn") thành một câu hỏi độc lập và đầy đủ ngữ nghĩa trước khi đem đi xử lý, giúp bot luôn hiểu đúng bối cảnh giao tiếp.
+- **Query Transform (Multi-step/Sub-query Decomposition)**: Kỹ thuật sử dụng LLM để phân rã các câu hỏi phức tạp của người dùng thành tối đa 3 câu hỏi con (sub-queries) đơn giản, độc lập. Các câu hỏi con này được đem đi truy xuất dữ liệu (Retrieval) riêng biệt, giúp lấy được ngữ cảnh đầy đủ, chi tiết và hạn chế tối đa việc bỏ sót thông tin.
+- **Query Routing (Logical Router)**: Phân loại câu hỏi thông minh trước khi xử lý. LLM tự động đánh giá độ phức tạp (để quyết định có dùng Query Transform hay không) và phân loại chủ đề (Kỹ thuật, Doanh nghiệp, hoặc Chung) để điều hướng đến nguồn dữ liệu (index) chính xác nhất, tối ưu tốc độ và độ chuẩn xác của câu trả lời.
+- **Retrieval & Re-ranking Pipeline**: Kết hợp tìm kiếm đa luồng (truy xuất các tài liệu cho toàn bộ các sub-queries từ Qdrant) cùng với cơ chế deduplication (loại bỏ trùng lặp). Sau đó, áp dụng kỹ thuật **Re-ranking** (chấm điểm lại bằng mô hình Cross-Encoder) để đánh giá chéo và chọn lọc ra những ngữ cảnh (context) có độ chính xác và tương đồng cao nhất với ý định gốc của người dùng trước khi đưa vào LLM.
+
+
+### 2. Mô hình AI (Models)
+- **Groq LLaMA 3.3 (`llama-3.3-70b-versatile`)**: Làm bộ não chính (LLM) để tổng hợp, suy luận và tạo ra câu trả lời cuối cùng, tối ưu cho tốc độ siêu tốc và khả năng hiểu ngữ cảnh vượt trội thông qua API của Groq.
+- **HuggingFace Sentence-Transformers**: 
+  - **Embedding**: Sử dụng `bkai-foundation-models/vietnamese-bi-encoder` (mô hình Bi-Encoder tối ưu cho tiếng Việt) để chuyển đổi văn bản thành vector (768 chiều).
+>>>>>>> 32f0e14 (feat: tích hợp supabase database và cấu hình github actions ci)
   - **Re-ranking**: Sử dụng Cross-Encoder (`ms-marco-MiniLM-L-6-v2`) để chấm điểm và sắp xếp lại mức độ liên quan của các tài liệu sau khi Retrieval, tăng tính chính xác tuyệt đối.
 
 ### 3. Cơ sở dữ liệu Vector (Vector Database)
@@ -87,6 +100,16 @@ Cấu hình API Key: Tạo file `.env` ở thư mục gốc:
 ```env
 GROQ_API_KEY=your_groq_api_key_here
 ```
+### Công cụ tự động (Khuyên dùng)
+Dự án có sẵn script `run.sh` giúp bạn dễ dàng quản lý hệ thống qua giao diện menu tương tác mà không cần nhớ lệnh Python:
+```bash
+bash run.sh
+```
+*Giao diện Menu sẽ cho phép bạn: (1) Nạp dữ liệu, (2) Chạy Web Chatbot, (3) Xóa trắng Database.*
+
+---
+*(Hoặc bạn có thể chạy thủ công từng bước như bên dưới)*
+
 ### Công cụ tự động (Khuyên dùng)
 Dự án có sẵn script `run.sh` giúp bạn dễ dàng quản lý hệ thống qua giao diện menu tương tác mà không cần nhớ lệnh Python:
 ```bash

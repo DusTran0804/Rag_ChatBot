@@ -9,7 +9,8 @@ def transform_with_multi_step(user_query: str) -> list:
     multi_query_prompt = ChatPromptTemplate.from_template(QUERY_TRANSFORM_PROMPT)
 
     multi_chain = multi_query_prompt | llm | StrOutputParser()
-    response = multi_chain.invoke({"question": user_query})
+    from app.core.config import invoke_chain_with_retry
+    response = invoke_chain_with_retry(multi_chain, {"question": user_query})
     sub_queries = [q.strip() for q in response.split('\n') if q.strip()]
 
     cleaned_queries = []

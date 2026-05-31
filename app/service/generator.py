@@ -10,7 +10,8 @@ def generate_answer(user_query: str, context: str, llm):
 
     chain = prompt | llm | StrOutputParser()
     
-    response = chain.invoke({
+    from app.core.config import invoke_chain_with_retry
+    response = invoke_chain_with_retry(chain, {
         "context": context,
         "input": user_query
     })

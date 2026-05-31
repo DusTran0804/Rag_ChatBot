@@ -10,7 +10,7 @@ echo -e "${BLUE}    MULTIMODAL RAG CHATBOT RUNNER      ${NC}"
 echo -e "${BLUE}=======================================${NC}"
 
 if [ ! -f .env ]; then
-    echo -e "${RED}[!] Không tìm thấy file .env. Vui lòng tạo file .env và thêm GOOGLE_API_KEY.${NC}"
+    echo -e "${RED}[!] Không tìm thấy file .env. Vui lòng tạo file .env và thêm GROQ_API_KEY.${NC}"
     exit 1
 fi
 
