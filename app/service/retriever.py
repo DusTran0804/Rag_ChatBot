@@ -1,7 +1,6 @@
 from qdrant_client import QdrantClient
 from qdrant_client.http import models
-from sentence_transformers import CrossEncoder
-from app.core.config import QDRANT_PATH, RERANK_MODEL_NAME, get_embeddings, COLLECTION_NAME
+from app.core.config import QDRANT_PATH, RERANK_MODEL_NAME, get_embeddings, COLLECTION_NAME, IS_RENDER
 
 _rerank_model = None
 _qdrant_client = None
@@ -9,8 +8,10 @@ _qdrant_client = None
 def get_rerank_model():
     global _rerank_model
     if _rerank_model is None:
+        from sentence_transformers import CrossEncoder
         _rerank_model = CrossEncoder(RERANK_MODEL_NAME, device='cpu')
     return _rerank_model
+
 
 def get_qdrant_client():
     global _qdrant_client
@@ -58,6 +59,10 @@ def apply_post_retrieval_rerank(user_query: str, retrieved_texts: str, top_n: in
     
     if not doc_list:
         return "Không tìm thấy ngữ cảnh phù hợp."
+
+    if IS_RENDER:
+        # Bỏ qua CrossEncoder khi chạy trên Render để tránh tràn bộ nhớ (Free tier 512MB RAM)
+        return "\n\n---\n\n".join(doc_list[:top_n])
 
     rerank_model = get_rerank_model()
     pairs = [[user_query, doc] for doc in doc_list]
