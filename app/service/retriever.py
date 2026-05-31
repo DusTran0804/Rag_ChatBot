@@ -60,10 +60,6 @@ def apply_post_retrieval_rerank(user_query: str, retrieved_texts: str, top_n: in
     if not doc_list:
         return "Không tìm thấy ngữ cảnh phù hợp."
 
-    if IS_RENDER:
-        # Bỏ qua CrossEncoder khi chạy trên Render để tránh tràn bộ nhớ (Free tier 512MB RAM)
-        return "\n\n---\n\n".join(doc_list[:top_n])
-
     rerank_model = get_rerank_model()
     pairs = [[user_query, doc] for doc in doc_list]
     scores = rerank_model.predict(pairs)
