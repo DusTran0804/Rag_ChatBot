@@ -5,6 +5,8 @@ from dotenv import load_dotenv
 # Nạp file .env trực tiếp để tránh import các thư viện nặng (như torch/huggingface)
 load_dotenv()
 SUPABASE_DATABASE_URL = os.getenv("SUPABASE_DATABASE_URL")
+if SUPABASE_DATABASE_URL:
+    SUPABASE_DATABASE_URL = SUPABASE_DATABASE_URL.strip().replace('\r', '').replace('\n', '')
 
 def test_connection():
     print("--- KIỂM TRA KẾT NỐI SUPABASE DATABASE ---")

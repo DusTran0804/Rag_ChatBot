@@ -12,6 +12,8 @@ QDRANT_PATH = os.path.join(BASE_DIR, "VectorDB")
 COLLECTION_NAME = "rag_input"
 CATEGORIES = ["ky_thuat", "doanh_nghiep", "chung"]
 SUPABASE_DATABASE_URL = os.getenv("SUPABASE_DATABASE_URL")
+if SUPABASE_DATABASE_URL:
+    SUPABASE_DATABASE_URL = SUPABASE_DATABASE_URL.strip().replace('\r', '').replace('\n', '')
 
 EMBED_MODEL_NAME = "bkai-foundation-models/vietnamese-bi-encoder"
 LLM_MODEL_NAME = "llama-3.3-70b-versatile"
