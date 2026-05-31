@@ -29,8 +29,6 @@ ehthumbs.db
 Thumbs.db
 
 # Vector Databases
-VectorDB/
-data/
 evaluation/results/
 *.log
 
