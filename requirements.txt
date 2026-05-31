@@ -20,4 +20,6 @@ matplotlib
 langchain-openai
 sqlalchemy
 psycopg2-binary
+langchain-groq
+
 
