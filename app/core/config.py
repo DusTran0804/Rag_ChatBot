@@ -27,7 +27,7 @@ RERANK_MODEL_NAME = "cross-encoder/ms-marco-MiniLM-L-6-v2"
 
 def get_embeddings():
     if IS_RENDER:
-        return GoogleGenerativeAIEmbeddings(model="models/text-embedding-004")
+        return GoogleGenerativeAIEmbeddings(model="models/gemini-embedding-2", output_dimensionality=768)
     return HuggingFaceEmbeddings(model_name=EMBED_MODEL_NAME)
 
 
