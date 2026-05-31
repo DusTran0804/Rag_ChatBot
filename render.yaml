@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: rag-chatbot-app
+    runtime: docker
+    plan: free
+    envVars:
+      - key: SUPABASE_DATABASE_URL
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: GOOGLE_API_KEY
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
