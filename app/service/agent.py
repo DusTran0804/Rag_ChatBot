@@ -5,7 +5,7 @@ from app.service.generator import generate_answer
 from app.core.config import get_llm
 
 def run_advanced_rag_agent(raw_user_query: str, session_id: str):
-    llm = get_llm()
+    llm = get_llm(temperature=0)
     full_query = contextualize_user_query(raw_user_query, session_id)
     routing_res = logical_router(full_query)
     raw_docs = hybrid_retrieval(routing_res)
