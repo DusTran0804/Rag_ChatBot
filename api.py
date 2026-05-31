@@ -30,5 +30,6 @@ async def serve_frontend():
 
 if __name__ == "__main__":
     os.makedirs("./data", exist_ok=True)
-    print("Khởi động server API tại http://localhost:8000")
-    uvicorn.run("api:app", host="0.0.0.0", port=8000, reload=True)
+    port = int(os.getenv("PORT", 8000))
+    print(f"Khởi động server API tại http://localhost:{port}")
+    uvicorn.run("api:app", host="0.0.0.0", port=port, reload=True)

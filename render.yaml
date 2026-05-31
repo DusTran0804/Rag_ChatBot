@@ -3,6 +3,8 @@ services:
     name: rag-chatbot-app
     runtime: docker
     plan: free
+    port: 8000
+
     envVars:
       - key: SUPABASE_DATABASE_URL
         sync: false
