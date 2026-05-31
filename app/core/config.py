@@ -9,7 +9,7 @@ IS_RENDER = os.getenv("RENDER") == "true"
 if not IS_RENDER:
     from langchain_huggingface import HuggingFaceEmbeddings
 else:
-    from langchain_google_genai import GoogleGenAIEmbeddings
+    from langchain_google_genai import GoogleGenerativeAIEmbeddings
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 DATA_PATH = os.path.join(BASE_DIR, "data")
@@ -27,7 +27,7 @@ RERANK_MODEL_NAME = "cross-encoder/ms-marco-MiniLM-L-6-v2"
 
 def get_embeddings():
     if IS_RENDER:
-        return GoogleGenAIEmbeddings(model="models/text-embedding-004")
+        return GoogleGenerativeAIEmbeddings(model="models/text-embedding-004")
     return HuggingFaceEmbeddings(model_name=EMBED_MODEL_NAME)
 
 
