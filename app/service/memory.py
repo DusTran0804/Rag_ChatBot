@@ -39,31 +39,39 @@ def add_message_to_history(session_id: str, role: str, content: str):
         else:
             history.add_ai_message(content)
 
-def contextualize_user_query(user_query: str, session_id: str) -> str:
+def contextualize_user_query(raw_query: str, session_id: str) -> str:
+    history = get_session_history(session_id)
+    if not history.messages:
+        return raw_query
+
+    llm = get_llm(temperature=0.0)
+    
+    # Extract only the last 4 messages to avoid token limit and distraction
+    recent_messages = history.messages[-4:]
+    history_str = "\n".join([f"{'User' if m.type == 'human' else 'AI'}: {m.content}" for m in recent_messages])
+    
+    prompt_text = f"""BẠN LÀ MỘT CÔNG CỤ XỬ LÝ NGÔN NGỮ (TEXT PROCESSOR). BẠN KHÔNG PHẢI LÀ CHATBOT!
+TUYỆT ĐỐI KHÔNG ĐƯỢC TRẢ LỜI CÂU HỎI. NHIỆM VỤ DUY NHẤT LÀ TRẢ VỀ MỘT CHUỖI VĂN BẢN (TEXT).
+
+Lịch sử trò chuyện gần đây:
+{history_str}
+
+Nhiệm vụ: Phân tích đầu vào hiện tại của người dùng là "{raw_query}"
+1. Nếu đầu vào này chứa các từ phụ thuộc ngữ cảnh (như "nó", "vậy còn cái này"), hãy viết lại thành một câu hỏi hoàn chỉnh dựa vào Lịch sử.
+2. Nếu đầu vào này ĐÃ RÕ NGHĨA hoặc CHỈ LÀ MỘT CỤM TỪ KHÓA , BẮT BUỘC TRẢ VỀ Y HỆT NGUYÊN VĂN CỤM TỪ ĐÓ, không được bịa thành câu hỏi.
+3. CHỈ IN RA KẾT QUẢ CUỐI CÙNG. KHÔNG TRẢ LỜI CÂU HỎI, KHÔNG GIẢI THÍCH, KHÔNG CHÀO HỎI."""
+
     try:
-        history = get_session_history(session_id)
-        messages = history.messages
+        from langchain_core.messages import HumanMessage
+        result = llm.invoke([HumanMessage(content=prompt_text)])
+        contextualized_q = result.content.strip()
+        # Fallback in case LLM is too chatty (though this prompt should strictly prevent it)
+        if len(contextualized_q) > len(raw_query) * 3 and len(contextualized_q) > 50:
+            # If the output is absurdly long, it probably hallucinated an answer. Fallback to raw.
+            if "?" not in contextualized_q:
+                return raw_query
+        return contextualized_q
     except Exception as e:
-        print(f"[CẢNH BÁO] Lỗi khi đọc lịch sử hội thoại database ({e}). Sử dụng bộ nhớ RAM tạm thời.")
-        if session_id not in history_store:
-            history_store[session_id] = ChatMessageHistory()
-        messages = history_store[session_id].messages
-
-    if not messages:
-        return user_query
-
-    llm = get_llm(temperature=0)
-
-    contextualize_q_prompt = ChatPromptTemplate.from_messages([
-        ("system", MEMORY_CONTEXTUALIZE_PROMPT),
-        MessagesPlaceholder("chat_history"),
-        ("human", "{input}"),
-    ])
- 
-    chain = contextualize_q_prompt | llm | StrOutputParser()
-    from app.core.config import invoke_chain_with_retry
-    rewritten_query = invoke_chain_with_retry(chain, {
-        "chat_history": messages,
-        "input": user_query
-    })
-    return rewritten_query
+        import traceback
+        traceback.print_exc()
+        return raw_query
