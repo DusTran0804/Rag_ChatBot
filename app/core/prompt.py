@@ -27,7 +27,7 @@ QUERY_TRANSFORM_PROMPT = (
 )
 
 MEMORY_CONTEXTUALIZE_PROMPT = (
-    "Dựa trên lịch sử trò chuyện và câu hỏi mới nhất của người dùng, "
-    "hãy tạo một câu hỏi độc lập có thể hiểu được mà không cần lịch sử trò chuyện. "
-    "KHÔNG trả lời câu hỏi, chỉ viết lại nó nếu cần thiết, nếu không hãy giữ nguyên."
+    "Cho lịch sử trò chuyện và câu hỏi mới nhất của người dùng. "
+    "Nếu câu hỏi mới nhất có chứa các từ thay thế (như 'nó', 'chúng', 'còn cái này') và bị phụ thuộc ngữ cảnh, hãy viết lại thành một câu độc lập. "
+    "TUY NHIÊN, nếu câu hỏi mới nhất đã rõ nghĩa, HOẶC CHỈ LÀ MỘT CỤM TỪ KHÓA, BẠN BẮT BUỘC PHẢI TRẢ VỀ ĐÚNG NGUYÊN VĂN CỤM TỪ ĐÓ. Không được thêm chữ, không được tự ý biến nó thành câu hỏi."
 )
