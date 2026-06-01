@@ -18,7 +18,7 @@ if SUPABASE_DATABASE_URL:
 
 EMBED_MODEL_NAME = "bkai-foundation-models/vietnamese-bi-encoder"
 LLM_MODEL_NAME = "llama-3.3-70b-versatile"
-RERANK_MODEL_NAME = "cross-encoder/ms-marco-MiniLM-L-6-v2"
+RERANK_MODEL_NAME = "amberoad/bert-multilingual-passage-reranking-msmarco"
 
 def get_embeddings():
     from langchain_huggingface import HuggingFaceEmbeddings
