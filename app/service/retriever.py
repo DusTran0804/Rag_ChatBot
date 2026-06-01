@@ -1,6 +1,6 @@
 from qdrant_client import QdrantClient
 from qdrant_client.http import models
-from app.core.config import QDRANT_PATH, RERANK_MODEL_NAME, get_embeddings, COLLECTION_NAME, IS_RENDER
+from app.core.config import QDRANT_PATH, RERANK_MODEL_NAME, get_embeddings, COLLECTION_NAME
 
 _rerank_model = None
 _qdrant_client = None

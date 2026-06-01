@@ -4,12 +4,7 @@ from langchain_groq import ChatGroq
 
 load_dotenv()
 
-IS_RENDER = os.getenv("RENDER") == "true"
-
-if not IS_RENDER:
-    from langchain_huggingface import HuggingFaceEmbeddings
-else:
-    from langchain_google_genai import GoogleGenerativeAIEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 DATA_PATH = os.path.join(BASE_DIR, "data")
