@@ -31,7 +31,8 @@ def get_llm(temperature=0.2):
         model=LLM_MODEL_NAME,
         temperature=temperature,
         groq_api_key=api_key,
-        max_retries=10
+        max_retries=10,
+        timeout=60.0
     )
 
 shared_llm = get_llm()

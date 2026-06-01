@@ -20,6 +20,24 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+import threading
+
+@app.on_event("startup")
+def preload_models():
+    def load():
+        try:
+            print("Đang tải trước mô hình Embeddings...")
+            from app.core.config import get_embeddings
+            get_embeddings()
+            print("Đang tải trước mô hình Rerank...")
+            from app.service.retriever import get_rerank_model
+            get_rerank_model()
+            print("Tải mô hình hoàn tất.")
+        except Exception as e:
+            print(f"Lỗi khi tải trước mô hình: {e}")
+            
+    threading.Thread(target=load, daemon=True).start()
+
 app.include_router(router, prefix="/api/v1")
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
