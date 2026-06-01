@@ -12,7 +12,7 @@ def get_session_history(session_id: str):
         try:
             return SQLChatMessageHistory(
                 session_id=session_id,
-                connection_string=SUPABASE_DATABASE_URL,
+                connection=SUPABASE_DATABASE_URL,
                 table_name="chat_history"
             )
         except Exception as e:
