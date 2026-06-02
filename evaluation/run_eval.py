@@ -32,7 +32,8 @@ from evaluation.evaluate import collect_rag_outputs
 
 rag_results = collect_rag_outputs(
     "evaluation/optimization_dataset.json",
-    delay_seconds=2.0
+    limit=5,
+    delay_seconds=1.0
 )
 
 # ── Bước 3: RAGAS evaluation ──────────────────────────────────

@@ -4,47 +4,64 @@
     "retrieved_contexts":[
       "6\/46\nChú ý: Tại Bước (k3) của thuật toán trên:\ni) Ta luôn có ∇gik(xk) ̸= 0 vì nếu ngược lại thì dogik là hàm lồi\nnên ta có\ngik(x) ≥ gik(xk) + ⟨∇gik(xk), x − xk⟩ > 0 ∀x\nvà điều này có nghĩa là tập chấp nhận được X của bài toán\nđang xét bằng rỗng;\nii) Siêu phẳng\n{x ∈ Rn | ⟨∇gik(xk), x − xk⟩ + gik(xk) = 0}\nđể xây dựng đa diệnXk+1 được gọi là siêu phẳng cắt. Đây\nchính là siêu phẳng tách tập lồi X và điểm xk \/∈ X.",
       "Giải\nmin\n\u001a\n⟨∇f (x1), x⟩ = 2\n5x1 + 4\n5x2\n\f\f\f\f x ∈ D\n\u001b\n.",
-      "Phương án cực biên\nx0 = (b1, b2, ."
+      "Hàm số có điểm\ncực đại toàn cục hoặc cực tiểu toàn cục không?"
     ],
-    "response":"Trong Bước (k3) của thuật toán, siêu phẳng {x ∈ Rn | ⟨∇gik(xk), x − xk⟩ + gik(xk) = 0} được gọi là siêu phẳng cắt. Siêu phẳng này có chức năng tách tập lồi X và điểm xk không thuộc X. Nó được sử dụng để xây dựng đa diện Xk+1.",
+    "response":"Siêu phẳng {x ∈ Rn | ⟨∇gik(xk), x − xk⟩ + gik(xk) = 0} được gọi là siêu phẳng cắt. Chức năng của nó là để xây dựng đa diện Xk+1 và tách tập lồi X với điểm xk không thuộc X.",
     "reference":"Siêu phẳng {x ∈ Rn | ⟨∇gik(xk), x − xk⟩ + gik(xk) = 0} được gọi là siêu phẳng cắt. Đây chính là siêu phẳng tách tập lồi X và điểm xk không thuộc X.",
     "faithfulness":1.0,
-    "answer_relevancy":null,
-    "context_precision":0.9999999999,
     "context_recall":1.0,
-    "answer_correctness":0.647569239,
-    "timestamp":"20260523_212654"
+    "timestamp":"20260602_141024"
   },
   {
     "user_input":"Khi giải hệ phương trình ∇xψ(x, α) = 0, điểm dừng x*(α) nhận được là gì và giới hạn của các thành phần của điểm dừng này khi tham số α tiến về 0+ là bao nhiêu?",
     "retrieved_contexts":[
       "45\/46\nGiải hệ phương trình\n∇xψ(x, α) = 0 ⇐ ⇒\n\n\n\n1 − α\n1 + x1 − x2\n2\n= 0\n−2 + 2αx2\n1 + x1 − x2\n2\n− α\nx2\n= 0\nta nhận được điểm dừngx∗(α) = (x∗\n1(α), x∗\n2(α))T với\nx∗\n1(α) =\n√\n1 + 2α + 3α − 1\n2 , x∗\n2(α) = 1 +\n√\n1 + 2α\n2 . Vì tham sốα > 0 và giảm dần về 0 nên\nlim\nα→0+\nx∗\n1(α) = 0, lim\nα→0+\nx∗\n2(α) = 1.",
-      "Kiểm tra gradient tại x1:\n∇f (x1) =\n\u00123 · 12 − 3\n2 · 1 − 2\n\u0013\n=\n\u00120\n0\n\u0013\n. Kết luận: Dừng thuật toán với điểm dừng\nx1 = (1, 1).",
-      "25\/37\nVì∇f (x1) = 0, điểm x1 = (1, 1)T là điểm dừng của hàm f . Kết luận: Dừng thuật toán tạix1 = (1, 1)."
+      "Điểm x∗ ∈ Rn thỏa mãn ∇f (x∗) = 0 được gọi là điểm dừng của\nhàm f .",
+      "Kiểm tra gradient tại x1:\n∇f (x1) =\n\u00123 · 12 − 3\n2 · 1 − 2\n\u0013\n=\n\u00120\n0\n\u0013\n. Kết luận: Dừng thuật toán với điểm dừng\nx1 = (1, 1)."
     ],
-    "response":"Khi giải hệ phương trình ∇xψ(x, α) = 0, điểm dừng x*(α) nhận được là:\n\n* x∗1(α) = √(1 + 2α + 3α²) \/ 2\n* x∗2(α) = 1 + √(1 + 2α) \/ 2\n\nGiới hạn của các thành phần của điểm dừng này khi tham số α tiến về 0+ là:\n\n* lim α→0+ x∗1(α) = 0\n* lim α→0+ x∗2(α) = 1\n\nĐiều này cho thấy rằng khi tham số α giảm dần về 0, điểm dừng x*(α) sẽ tiến về điểm (0, 1).",
+    "response":"Khi giải hệ phương trình ∇xψ(x, α) = 0, điểm dừng x*(α) nhận được là x∗(α) = (x∗1(α), x∗2(α))T với \nx∗1(α) = √(1 + 2α + 3α^2 - 1)\/2, \nx∗2(α) = 1 + √(1 + 2α)\/2.\n\nGiới hạn của các thành phần của điểm dừng này khi tham số α tiến về 0+ là:\nlim α→0+ x∗1(α) = 0, \nlim α→0+ x∗2(α) = 1.",
     "reference":"Khi giải hệ phương trình ∇xψ(x, α) = 0, ta nhận được điểm dừng x*(α) = (x*1(α), x*2(α))T với x*1(α) = (√1 + 2α + 3α - 1)\/2 và x*2(α) = 1 + (√1 + 2α)\/2. Khi tham số α > 0 và giảm dần về 0, giới hạn của các thành phần của điểm dừng là limα→0+ x*1(α) = 0 và limα→0+ x*2(α) = 1.",
-    "faithfulness":0.6666666667,
-    "answer_relevancy":null,
-    "context_precision":0.9999999999,
-    "context_recall":1.0,
-    "answer_correctness":0.5591398631,
-    "timestamp":"20260523_212654"
+    "faithfulness":1.0,
+    "context_recall":0.2857142857,
+    "timestamp":"20260602_141024"
   },
   {
     "user_input":"Theo Định lý về độ lệch bù, ý nghĩa kinh tế đối với các phương pháp sản xuất là gì khi một phương pháp được áp dụng và khi không được áp dụng?",
     "retrieved_contexts":[
-      "20\/29\nTheo Định lý về độ lệch bù, ta có những ý nghĩa kinh tế quan\ntrọng sau đây:\n\/cgĐối với các phương pháp sản xuất:\n Nếu phương pháp thứ j được áp dụng (t∗\nj > 0):\nmP\ni=1\naijz∗\ni = cj\n Tổng giá trị các sản phẩm sản xuất theo phương phápj phải\nvừa đúng bằng chi phí cj. ○ Nếu phương pháp thứ j không được áp dụng (t∗\nj = 0):\nmP\ni=1\naijz∗\ni < cj Tổng giá trị các sản phẩm sản xuất theo\nphương pháp j thấp hơn chi phícj (sản xuất theo phương pháp\nnày sẽ bị lỗ).",
       "12\/29\nĐịnh lý về độ lệch bù\nGiả sử x là phương án của (P) và y là phương án của (D). Khi đó, x, y là phương án tối ưu của cặp bài toán đối ngẫu\nkhi và chỉ khi\n(\n⟨Ax − b, y⟩ = 0 (1)\n⟨c − ATy, x⟩ = 0 (2)\nNhận xét:\ni) Nếu bài toán gốc có dạng chính tắc (Ax = b, x ≥ 0), điều kiện\n(1) luôn thỏa mãn.",
-      "Khi đó, điều kiện độ lệch bù chỉ còn là:\n⟨c − ATy, x⟩ = 0\nii) Điều kiện độ lệch bù cho phép tìm nghiệm tối ưu của bài toán\nnày khi biết nghiệm tối ưu của bài toán kia."
+      "Khi đó, điều kiện độ lệch bù chỉ còn là:\n⟨c − ATy, x⟩ = 0\nii) Điều kiện độ lệch bù cho phép tìm nghiệm tối ưu của bài toán\nnày khi biết nghiệm tối ưu của bài toán kia.",
+      "20\/29\nTheo Định lý về độ lệch bù, ta có những ý nghĩa kinh tế quan\ntrọng sau đây:\n\/cgĐối với các phương pháp sản xuất:\n Nếu phương pháp thứ j được áp dụng (t∗\nj > 0):\nmP\ni=1\naijz∗\ni = cj\n Tổng giá trị các sản phẩm sản xuất theo phương phápj phải\nvừa đúng bằng chi phí cj. ○ Nếu phương pháp thứ j không được áp dụng (t∗\nj = 0):\nmP\ni=1\naijz∗\ni < cj Tổng giá trị các sản phẩm sản xuất theo\nphương pháp j thấp hơn chi phícj (sản xuất theo phương pháp\nnày sẽ bị lỗ)."
     ],
-    "response":"Theo Định lý về độ lệch bù, ý nghĩa kinh tế đối với các phương pháp sản xuất như sau:\n\n* Khi phương pháp thứ j được áp dụng (t∗j > 0):\n + Tổng giá trị các sản phẩm sản xuất theo phương pháp j phải vừa đúng bằng chi phí cj.\n* Khi phương pháp thứ j không được áp dụng (t∗j = 0):\n + Tổng giá trị các sản phẩm sản xuất theo phương pháp j thấp hơn chi phí cj, nghĩa là sản xuất theo phương pháp này sẽ bị lỗ.",
+    "response":"Theo Định lý về độ lệch bù, ý nghĩa kinh tế đối với các phương pháp sản xuất như sau:\n\n- Nếu phương pháp thứ j được áp dụng (t∗j > 0): Tổng giá trị các sản phẩm sản xuất theo phương pháp j phải vừa đúng bằng chi phí cj. Điều này có nghĩa là sản xuất theo phương pháp này sẽ không bị lỗ cũng không có lợi nhuận, vì tổng giá trị sản phẩm bằng với chi phí sản xuất.\n\n- Nếu phương pháp thứ j không được áp dụng (t∗j = 0): Tổng giá trị các sản phẩm sản xuất theo phương pháp j thấp hơn chi phí cj. Điều này có nghĩa là sản xuất theo phương pháp này sẽ bị lỗ, vì tổng giá trị sản phẩm thấp hơn chi phí sản xuất.",
     "reference":"Theo Định lý về độ lệch bù, đối với các phương pháp sản xuất, nếu phương pháp thứ j được áp dụng (t∗j > 0), tổng giá trị các sản phẩm sản xuất theo phương pháp j phải vừa đúng bằng chi phí cj. Ngược lại, nếu phương pháp thứ j không được áp dụng (t∗j = 0), tổng giá trị các sản phẩm sản xuất theo phương pháp j thấp hơn chi phí cj, điều này có nghĩa là sản xuất theo phương pháp này sẽ bị lỗ.",
-    "faithfulness":1.0,
-    "answer_relevancy":null,
-    "context_precision":0.9999999999,
+    "faithfulness":0.7142857143,
     "context_recall":1.0,
-    "answer_correctness":0.6709179689,
-    "timestamp":"20260523_212654"
+    "timestamp":"20260602_141024"
+  },
+  {
+    "user_input":"Theo đoạn văn, mục đích của bài toán đối ngẫu là gì và nó liên quan đến việc xác định yếu tố nào để đạt được mục tiêu đó?",
+    "retrieved_contexts":[
+      "Các biến của bài toán đối ngẫu được gọi là biến đối\nngẫu.",
+      "Các ràng buộc chính của bài toán đối ngẫu tương ứng\n1-1 với các biến của bài toán gốc.",
+      "3\/29\n2.6 Đối ngẫu\n Đối ngẫu là một phương pháp xây dựng cho bài toán quy\nhoạch tuyến tính đang xét (gọi làbài toán gốc ) một bài toán\nquy hoạch tuyến tính “đối” với nó (gọi làbài toán đối ngẫu )\nsao cho từ nghiệm tối ưu của bài toán này ta sẽ thu được các\nthông tin về nghiệm tối ưu của bài toán kia."
+    ],
+    "response":"Mục đích của bài toán đối ngẫu là xây dựng một bài toán quy hoạch tuyến tính \"đối\" với bài toán gốc, sao cho từ nghiệm tối ưu của bài toán này ta sẽ thu được các thông tin về nghiệm tối ưu của bài toán kia. Nó liên quan đến việc xác định biến đối ngẫu và ràng buộc chính của bài toán đối ngẫu tương ứng 1-1 với các biến của bài toán gốc.",
+    "reference":"Mục đích của bài toán đối ngẫu là xác định giá trị zi cho mỗi đơn vị sản phẩm loại i sao cho tổng giá trị toàn bộ sản phẩm theo yêu cầu của xã hội là lớn nhất.",
+    "faithfulness":0.8333333333,
+    "context_recall":1.0,
+    "timestamp":"20260602_141024"
+  },
+  {
+    "user_input":"Theo đoạn văn, nghiệm tối ưu (phương án tối ưu) được định nghĩa như thế nào?",
+    "retrieved_contexts":[
+      "Khi đó x0 là nghiệm tối ưu toàn cục của (LPct).",
+      "Bài toán không có nghiệm tối ưu.",
+      "Vì đây là bài toán quy\nhoạch lồi nên nó cũng là nghiệm cực tiểu duy nhất."
+    ],
+    "response":"Xin lỗi, tôi không tìm thấy thông tin này trong dữ liệu được cung cấp.",
+    "reference":"Nghiệm tối ưu (phương án tối ưu) là một nghiệm chấp nhận được x∗ ∈ D thỏa mãn f (x∗) = ⟨c, x∗⟩ ≤ f (x) = ⟨c, x⟩, với mọi x ∈ D.",
+    "faithfulness":0.5,
+    "context_recall":0.0,
+    "timestamp":"20260602_141024"
   }
 ]

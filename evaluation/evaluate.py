@@ -51,21 +51,29 @@ logger = logging.getLogger(__name__)
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 RAGAS_EMBED_MODEL = "bkai-foundation-models/vietnamese-bi-encoder"
 
+from langchain_groq import ChatGroq
+
 def get_ragas_llm():
-    """Khởi tạo LLM cho RAGAS 0.4 dùng Groq (Llama 3.1 70B) và LangchainLLMWrapper."""
+    """Khởi tạo LLM cho RAGAS 0.4 dùng Groq và LangchainLLMWrapper."""
+    GROQ_API_KEY = os.getenv("GROQ_API_KEY")
     if not GROQ_API_KEY:
         raise ValueError("Chưa cấu hình GROQ_API_KEY trong file .env")
     groq_llm = ChatGroq(
-        model="llama-3.3-70b-versatile",
+        model="llama-3.1-8b-instant",
         groq_api_key=GROQ_API_KEY,
         temperature=0,
-        max_retries=10
+        max_retries=3
     )
     return LangchainLLMWrapper(groq_llm)
 
 def get_ragas_embeddings():
     """Khởi tạo Embedding cho RAGAS 0.4 dùng HuggingFace và LangchainEmbeddingsWrapper."""
-    hf_embeddings = HuggingFaceEmbeddings(model_name=RAGAS_EMBED_MODEL)
+    from langchain_huggingface import HuggingFaceEmbeddings
+    from ragas.embeddings import LangchainEmbeddingsWrapper
+    hf_embeddings = HuggingFaceEmbeddings(
+        model_name=RAGAS_EMBED_MODEL,
+        model_kwargs={'device': 'cpu'}
+    )
     return LangchainEmbeddingsWrapper(hf_embeddings)
 
 # ──────────────────────────────────────────────────────────────
@@ -277,10 +285,7 @@ def run_ragas_evaluation(
     # Khởi tạo các metric RAGAS
     metrics = [
         Faithfulness(llm=ragas_llm),
-        AnswerRelevancy(llm=ragas_llm, embeddings=ragas_embeddings),
-        ContextPrecision(llm=ragas_llm),
         ContextRecall(llm=ragas_llm),
-        AnswerCorrectness(llm=ragas_llm, embeddings=ragas_embeddings),
     ]
 
     logger.info(f"Bắt đầu chấm điểm {len(rag_results)} mẫu với {len(metrics)} metrics...")

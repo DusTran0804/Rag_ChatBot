@@ -29,6 +29,8 @@ ehthumbs.db
 Thumbs.db
 
 # Vector Databases
-evaluation/results/
+evaluation/results/ragas_results_2*.json
+evaluation/results/ragas_results_2*.csv
+evaluation/results/ragas_summary_2*.json
 *.log
 

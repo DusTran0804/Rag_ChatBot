@@ -7,182 +7,309 @@ sdk: docker
 pinned: false
 ---
 
-# Advanced Enterprise RAG Chatbot
+# Advanced Enterprise RAG Chatbot 
 
-Hệ thống Chatbot RAG (Retrieval-Augmented Generation) thông minh, được thiết kế để xử lý đa luồng câu hỏi, hỗ trợ giao diện Web trực quan và tích hợp sâu với các mô hình ngôn ngữ tiên tiến của Google và HuggingFace.
+Hệ thống Chatbot RAG (Retrieval-Augmented Generation) thông minh, xây dựng trên kiến trúc **multi-step pipeline** với khả năng:
+- **Query Rewrite** — tự động viết lại câu hỏi dựa trên lịch sử hội thoại
+- **Logical Router** — phân loại câu hỏi và điều hướng đến nguồn dữ liệu phù hợp
+- **Sub-query Decomposition** — phân rã câu hỏi phức tạp thành nhiều sub-query
+- **Hybrid Retrieval + Re-ranking** — truy xuất đa luồng kết hợp chấm điểm lại Cross-Encoder
+- **Persistent Memory** — lưu lịch sử hội thoại lên Supabase (PostgreSQL) hoặc RAM
+
+---
 
 ## Sơ đồ Kiến trúc Hệ thống
-
-Dưới đây là sơ đồ luồng hoạt động (Workflow) của hệ thống, bao gồm quá trình Nạp dữ liệu (Offline Ingestion) và quá trình Truy vấn thời gian thực (Online Querying):
 
 ```mermaid
 flowchart TD
     %% Ingestion Pipeline
-    subgraph Ingestion [Offline Data Ingestion]
+    subgraph Ingestion ["Offline Data Ingestion"]
         direction LR
-        A1((Actor)) --> B1[Load Document]
-        B1 --> C1[Chunking Document]
-        C1 --> D1[Embedding Model]
+        A1((Actor)) --> B1[Load Document\n.pdf .docx .txt .csv .md]
+        B1 --> C1[Semantic Chunker\nbkai-vi-encoder]
+        C1 --> D1[Embedding\n768-dim vectors]
     end
 
-    D1 -- Save to Qdrant --> VDB[(Vector DB)]
+    D1 -- "Lưu vào Qdrant\n(dense vectors)" --> VDB[(Qdrant\nVector DB)]
 
     %% Query Pipeline
-    U1((Client)) --> Q1([Query])
-    
-    Q1 --> QT[Query Transform]
-    QT --> QR[Query Router]
-    
-    %% Routing
-    QR -- question from documents --> R1[question from documents]
-    QR -- Real-time question --> R2[Real-time question]
-    QR -- Other Question --> R3[Other Question]
-    
-    %% Branch 1: RAG Documents
-    R1 --> D2[Documents]
-    VDB -. Retrieval .-> D2
-    D2 --> RR[Re-rank and filter]
-    RR --> LLM[LLM]
-    
-    %% Branch 2: Real-time Search Agent
-    R2 --> AG[AI Agent]
-    AG --> D3[Documents]
-    D3 --> LLM
-    
-    %% Branch 3: Direct Answer
-    R3 --> ANS([Answer])
-    LLM --> ANS
+    U1((Client)) --> Q1([Raw Query])
+
+    Q1 --> MEM["Memory Contextualize\nQuery Rewrite nếu có lịch sử"]
+    MEM --> QR["Logical Router\nphân loại: SIMPLE / COMPLEX\nchỉ định index: ky_thuat / doanh_nghiep / chung"]
+
+    QR -- "SIMPLE" --> RET
+    QR -- "COMPLEX" --> QT["Sub-query Decomposition\ntách thành ≤3 sub-queries"]
+    QT --> RET
+
+    RET["🔍 Hybrid Retrieval\ntìm kiếm song song trên Qdrant\n+ deduplication"] --> RRK["Re-ranking\nCross-Encoder scoring\nchọn top-3 context"]
+
+    RRK --> GEN["Generator\nLLaMA 3.3 70B via Groq"]
+    GEN --> ANS([Answer])
+
+    ANS --> DB[("Chat History\nSupabase / RAM fallback")]
 ```
-
-## Frameworks sử dụng
-
-Dự án này được xây dựng trên một stack công nghệ hiện đại và chuyên nghiệp:
-
-### 1. Xử lý Logic & Orchestration
-- **[LangChain](https://python.langchain.com/)**: Bộ khung lõi (Core Framework) điều phối toàn bộ luồng RAG, khởi tạo LLM, kết nối VectorDB và thiết kế Agent thông minh.
-- **[LlamaIndex](https://www.llamaindex.ai/)**: Sử dụng `SimpleDirectoryReader` chuyên biệt để đọc, bóc tách và tiền xử lý nhiều định dạng tài liệu phức tạp (PDF, Text, Hình ảnh đa phương thức).
-<<<<<<< HEAD
-- **Query Transform:** Multi-step/Sub-query Decomposition & **Query Routing:** Logical Router.
-- **Memory Contextualization (Query Rewrite)**: Hệ thống duy trì lịch sử hội thoại (Chat History) và tự động sử dụng LLM để viết lại các câu hỏi mang tính chất nối tiếp (ví dụ: chứa từ "nó", "thế còn") thành một câu hỏi độc lập và đầy đủ ngữ nghĩa trước khi đem đi xử lý, giúp bot luôn hiểu đúng bối cảnh giao tiếp.
-- **Retrieval & Re-ranking Pipeline**: Kết hợp tìm kiếm đa luồng (truy xuất các tài liệu cho toàn bộ các sub-queries từ Qdrant) cùng với cơ chế deduplication (loại bỏ trùng lặp). Sau đó, áp dụng kỹ thuật **Re-ranking** (chấm điểm lại bằng mô hình Cross-Encoder) để đánh giá chéo và chọn lọc ra những ngữ cảnh (context) có độ chính xác và tương đồng cao nhất với ý định gốc của người dùng trước khi đưa vào LLM.
-### 2. Mô hình AI (Models)
-- **Groq LLaMA 3.3 (`llama-3.3-70b-versatile`)**: Làm bộ não chính (LLM) để tổng hợp, suy luận và tạo ra câu trả lời cuối cùng, tối ưu cho tốc độ siêu tốc và khả năng hiểu ngữ cảnh vượt trội thông qua API của Groq.
-- **HuggingFace Sentence-Transformers**: 
-   - **Embedding**: Sử dụng `bkai-foundation-models/vietnamese-bi-encoder` (mô hình Bi-Encoder tối ưu cho tiếng Việt) để chuyển đổi văn bản thành vector (768 chiều).
-=======
-- **Memory Contextualization (Query Rewrite)**: Hệ thống duy trì lịch sử hội thoại (Chat History) và tự động sử dụng LLM để viết lại các câu hỏi mang tính chất nối tiếp (ví dụ: chứa từ "nó", "thế còn") thành một câu hỏi độc lập và đầy đủ ngữ nghĩa trước khi đem đi xử lý, giúp bot luôn hiểu đúng bối cảnh giao tiếp.
-- **Query Transform (Multi-step/Sub-query Decomposition)**: Kỹ thuật sử dụng LLM để phân rã các câu hỏi phức tạp của người dùng thành tối đa 3 câu hỏi con (sub-queries) đơn giản, độc lập. Các câu hỏi con này được đem đi truy xuất dữ liệu (Retrieval) riêng biệt, giúp lấy được ngữ cảnh đầy đủ, chi tiết và hạn chế tối đa việc bỏ sót thông tin.
-- **Query Routing (Logical Router)**: Phân loại câu hỏi thông minh trước khi xử lý. LLM tự động đánh giá độ phức tạp (để quyết định có dùng Query Transform hay không) và phân loại chủ đề (Kỹ thuật, Doanh nghiệp, hoặc Chung) để điều hướng đến nguồn dữ liệu (index) chính xác nhất, tối ưu tốc độ và độ chuẩn xác của câu trả lời.
-- **Retrieval & Re-ranking Pipeline**: Kết hợp tìm kiếm đa luồng (truy xuất các tài liệu cho toàn bộ các sub-queries từ Qdrant) cùng với cơ chế deduplication (loại bỏ trùng lặp). Sau đó, áp dụng kỹ thuật **Re-ranking** (chấm điểm lại bằng mô hình Cross-Encoder) để đánh giá chéo và chọn lọc ra những ngữ cảnh (context) có độ chính xác và tương đồng cao nhất với ý định gốc của người dùng trước khi đưa vào LLM.
-
-
-### 2. Mô hình AI (Models)
-- **Groq LLaMA 3.3 (`llama-3.3-70b-versatile`)**: Làm bộ não chính (LLM) để tổng hợp, suy luận và tạo ra câu trả lời cuối cùng, tối ưu cho tốc độ siêu tốc và khả năng hiểu ngữ cảnh vượt trội thông qua API của Groq.
-- **HuggingFace Sentence-Transformers**: 
-  - **Embedding**: Sử dụng `bkai-foundation-models/vietnamese-bi-encoder` (mô hình Bi-Encoder tối ưu cho tiếng Việt) để chuyển đổi văn bản thành vector (768 chiều).
->>>>>>> 32f0e14 (feat: tích hợp supabase database và cấu hình github actions ci)
-  - **Re-ranking**: Sử dụng Cross-Encoder (`ms-marco-MiniLM-L-6-v2`) để chấm điểm và sắp xếp lại mức độ liên quan của các tài liệu sau khi Retrieval, tăng tính chính xác tuyệt đối.
-
-### 3. Cơ sở dữ liệu Vector (Vector Database)
-- **[Qdrant](https://qdrant.tech/)**: Vector DB siêu tốc độ để lưu trữ, index và tìm kiếm các Embeddings. Chạy trực tiếp ở chế độ Local (lưu thư mục `VectorDB`).
-
-### 4. Backend Server & Web UI
-- **[FastAPI](https://fastapi.tiangolo.com/) & Uvicorn**: Xây dựng máy chủ RESTful API bất đồng bộ siêu nhanh, mạnh mẽ, phục vụ trực tiếp Web UI.
-- **Pydantic**: Ràng buộc dữ liệu (Data Validation) chặt chẽ cho Request/Response.
-- **HTML / CSS / Vanilla JS**: Giao diện người dùng Web Chat trực quan, mượt mà (hỗ trợ Dark Mode, render Markdown).
-
-### 5. Triển khai (Deployment)
-- **[Docker](https://www.docker.com/)**: Đóng gói toàn bộ ứng dụng (containerized) thành Image thông qua `Dockerfile`, đảm bảo tính ổn định và tính chuyên nghiệp khi mang lên môi trường Production.
 
 ---
 
-## Cài đặt & Sử dụng (Môi trường Local)
+## Cấu trúc Dự án
 
-### 1. Chuẩn bị
-Yêu cầu: `Python 3.10+`.
-Bản sao dự án về và cài đặt thư viện:
+```
+Rag_Chatbot/
+├── app/
+│   ├── api/
+│   │   └── routes.py          # FastAPI endpoints (chat, evaluation, health)
+│   ├── core/
+│   │   ├── config.py           # Cấu hình chung: model names, paths, LLM/Embed factory
+│   │   └── prompt.py           # Tất cả system prompts (router, transform, generator, memory)
+│   ├── schema/
+│   │   └── model.py            # Pydantic schemas: ChatRequest, ChatResponse
+│   └── service/
+│       ├── agent.py            # Orchestrator — điều phối toàn bộ pipeline RAG
+│       ├── memory.py           # Query rewrite + lưu/đọc lịch sử (Supabase / RAM)
+│       ├── router.py           # Logical Router: phân loại độ phức tạp & chỉ định index
+│       ├── query_transform.py  # Sub-query Decomposition (Multi-step)
+│       ├── retriever.py        # Hybrid Retrieval + Cross-Encoder Re-ranking
+│       ├── generator.py        # Sinh câu trả lời với LLaMA 3.3 70B
+│       └── ingest.py           # Nạp tài liệu vào Qdrant (Semantic Chunking)
+├── evaluation/
+│   ├── evaluate.py             # RAGAS evaluation: Faithfulness, Context Recall
+│   ├── run_eval.py             # Script chạy evaluation đầu-cuối
+│   ├── rag_pipeline.py         # Wrapper pipeline để đánh giá (trả về contexts)
+│   ├── optimization_dataset.json  # Bộ câu hỏi + ground truth tiếng Việt
+│   └── results/               # Kết quả CSV, JSON, biểu đồ PNG
+├── scripts/
+│   ├── test_rag.py             # Script test nhanh RAG pipeline
+│   └── clear_db.py            # Xóa toàn bộ Vector DB
+├── static/                    # Web UI (HTML/CSS/JS)
+├── data/                      # Thư mục chứa tài liệu đầu vào
+├── VectorDB/                  # Qdrant lưu trữ local
+├── api.py                     # Entry point FastAPI app
+├── main.py                    # Entry point CLI chatbot
+├── run.sh                     # Script menu tương tác
+├── Dockerfile                 # Docker image (Python 3.12-slim, port 7860)
+├── render.yaml                # Cấu hình triển khai Render.com
+└── requirements.txt           # Thư viện Python
+```
+
+---
+
+## Chi tiết các Module
+
+### `app/service/memory.py` — Bộ nhớ & Query Rewrite
+
+Quản lý lịch sử hội thoại theo `session_id` với **2 chế độ lưu trữ**:
+
+| Chế độ | Điều kiện | Mô tả |
+|---|---|---|
+| **Supabase (PostgreSQL)** | `SUPABASE_DATABASE_URL` được cấu hình | Lưu bền vững qua `SQLChatMessageHistory`, bảng `chat_history` |
+| **RAM Fallback** | Không có DB URL hoặc kết nối thất bại | Lưu tạm thời trong dict `history_store` |
+
+**Query Rewrite**: Trước khi xử lý, LLM phân tích câu hỏi và lịch sử gần nhất (4 tin cuối). Nếu câu hỏi phụ thuộc ngữ cảnh (chứa đại từ như "nó", "cái đó"), LLM tự động viết lại thành câu độc lập hoàn chỉnh.
+
+---
+
+### `app/service/router.py` — Logical Router
+
+Sử dụng **Structured Output** của LangChain để phân loại câu hỏi thành 2 chiều:
+
+```python
+class RouterLogic(BaseModel):
+    logic_type: Literal["COMPLEX", "SIMPLE"]   
+    target_index: Literal["ky_thuat", "doanh_nghiep", "chung"]  
+```
+
+- **COMPLEX** → kích hoạt Sub-query Decomposition
+- **SIMPLE** → truy xuất trực tiếp
+- Routing lỗi → fallback về `chung` + query gốc
+
+---
+
+### `app/service/query_transform.py` — Sub-query Decomposition
+
+Với câu hỏi phức tạp, LLM phân rã thành tối đa **3 sub-query** độc lập, mỗi sub-query được dùng để truy xuất riêng biệt → tăng độ bao phủ ngữ cảnh.
+
+---
+
+### `app/service/retriever.py` — Hybrid Retrieval + Re-ranking
+
+**Retrieval**:
+- Embed từng sub-query bằng `bkai-foundation-models/vietnamese-bi-encoder`
+- Tìm kiếm Qdrant với `dense` vector (cosine similarity), `top_k=3` mỗi query
+- Deduplicate kết quả từ tất cả sub-query
+
+**Re-ranking**:
+- Mô hình: `amberoad/bert-multilingual-passage-reranking-msmarco` (Cross-Encoder)
+- Chấm điểm từng cặp `(query, document)` → chọn **top-3** context chất lượng cao nhất
+- Xử lý cả 1D và 2D logit output từ Cross-Encoder
+
+---
+
+### `app/service/ingest.py` — Nạp tài liệu
+
+Hỗ trợ đọc các định dạng:
+
+| Định dạng | Loader |
+|---|---|
+| `.pdf` | `PyPDFLoader` |
+| `.docx` / `.doc` | `Docx2txtLoader` |
+| `.txt` | `TextLoader` |
+| `.csv` | `CSVLoader` |
+| `.md` | `UnstructuredMarkdownLoader` |
+
+Sử dụng **Semantic Chunker** (`langchain-experimental`) với ngưỡng `breakpoint_threshold_amount=0.8` để chia tài liệu dựa trên nghĩa, không phải độ dài cố định.
+
+---
+
+### `app/service/generator.py` — Sinh câu trả lời
+
+Nhận `(query, top-3 context)` → gọi LLM (`llama-3.3-70b-versatile` via Groq) theo system prompt được định nghĩa trong `app/core/prompt.py`. Tích hợp retry tự động (tối đa 10 lần, exponential backoff tối đa 60s).
+
+---
+
+### `app/api/routes.py` — REST API Endpoints
+
+| Method | Endpoint | Mô tả |
+|---|---|---|
+| `POST` | `/chat` | Gửi câu hỏi, nhận câu trả lời |
+| `GET` | `/health` | Kiểm tra trạng thái API |
+| `POST` | `/evaluation/run` | Kích hoạt RAGAS evaluation (chạy background) |
+| `GET` | `/evaluation/status` | Kiểm tra trạng thái đang chạy evaluation |
+| `GET` | `/evaluation/latest` | Lấy kết quả evaluation mới nhất |
+| `GET` | `/evaluation/history` | Lấy danh sách tất cả lần evaluation |
+
+
+## Stack
+
+| Thành phần | Công nghệ | Chi tiết |
+|---|---|---|
+| **LLM chính** | Groq `llama-3.3-70b-versatile` | Sinh câu trả lời, Router, Query Transform, Rewrite |
+| **LLM đánh giá** | Groq `llama-3.1-8b-instant` | Chấm điểm RAGAS |
+| **Embedding** | `bkai-foundation-models/vietnamese-bi-encoder` | Vector 768 chiều, tối ưu tiếng Việt |
+| **Re-ranker** | `amberoad/bert-multilingual-passage-reranking-msmarco` | Cross-Encoder chấm điểm relevance |
+| **Vector DB** | Qdrant (local) | Lưu tại `VectorDB/`, dense cosine search |
+| **Chat History** | Supabase PostgreSQL / RAM | Persistent với SQLAlchemy + psycopg2 |
+| **Backend** | FastAPI + Uvicorn | Async REST API, port 7860 (Docker) / 8000 (local) |
+| **Evaluation** | RAGAS ≥ 0.2.0 | Faithfulness, Context Recall |
+| **Orchestration** | LangChain | Chain, PromptTemplate, Structured Output |
+| **Doc Loading** | LlamaIndex + LangChain loaders | PDF, DOCX, TXT, CSV, Markdown |
+| **Deployment** | Docker (Python 3.12-slim) | Render.com / HuggingFace Spaces |
+
+---
+
+## Cài đặt & Sử dụng
+
+### 1. Chuẩn bị môi trường
+
 ```bash
 pip install -r requirements.txt
 ```
 
-Cấu hình API Key: Tạo file `.env` ở thư mục gốc:
+Tạo file `.env` ở thư mục gốc:
+
 ```env
+# Bắt buộc
 GROQ_API_KEY=your_groq_api_key_here
+
+# Tùy chọn — nếu không cấu hình, hệ thống dùng RAM fallback
+SUPABASE_DATABASE_URL=postgresql+psycopg2://user:password@host:port/dbname
 ```
-### Công cụ tự động (Khuyên dùng)
-Dự án có sẵn script `run.sh` giúp bạn dễ dàng quản lý hệ thống qua giao diện menu tương tác mà không cần nhớ lệnh Python:
-```bash
-bash run.sh
-```
-*Giao diện Menu sẽ cho phép bạn: (1) Nạp dữ liệu, (2) Chạy Web Chatbot, (3) Xóa trắng Database.*
 
 ---
-*(Hoặc bạn có thể chạy thủ công từng bước như bên dưới)*
-
-### Công cụ tự động (Khuyên dùng)
-Dự án có sẵn script `run.sh` giúp bạn dễ dàng quản lý hệ thống qua giao diện menu tương tác mà không cần nhớ lệnh Python:
-```bash
-bash run.sh
-```
-*Giao diện Menu sẽ cho phép bạn: (1) Nạp dữ liệu, (2) Chạy Web Chatbot, (3) Xóa trắng Database.*
-
----
-*(Hoặc bạn có thể chạy thủ công từng bước như bên dưới)*
 
 ### 2. Nạp tài liệu vào hệ thống (Ingestion)
-Bỏ các file dữ liệu (.pdf, .txt...) vào thư mục `data/` rồi chạy lệnh:
+
+Đặt tài liệu (`.pdf`, `.docx`, `.txt`, `.csv`, `.md`) vào thư mục `data/`:
+
 ```bash
 python app/service/ingest.py
 ```
-*(Hệ thống sẽ tiến hành đọc, chunking, nhúng (embedding) và lưu vào Qdrant tại thư mục `VectorDB/`)*
 
-### 3. Khởi chạy Web Chatbot
-Bạn có thể chạy trực tiếp bằng Terminal CLI:
+Hệ thống sẽ:
+1. Đọc tất cả tài liệu trong `data/` (đệ quy)
+2. Chia bằng Semantic Chunker
+3. Embed và lưu vào Qdrant tại `VectorDB/`
+
+---
+
+### 3. Khởi chạy Chatbot
+
+**Dùng script menu tương tác (Khuyên dùng):**
+```bash
+bash run.sh
+```
+
+**Chạy Web UI (FastAPI):**
+```bash
+python api.py
+```
+
+**Chạy CLI:**
 ```bash
 python main.py
 ```
-Hoặc bật **Web UI** bằng FastAPI:
+
+**Test nhanh pipeline:**
 ```bash
-python api.py
-# Truy cập: http://localhost:8000
+python scripts/test_rag.py
 ```
 
-### 4. Đánh giá hệ thống (Ragas Evaluation)
+**Xóa Vector DB:**
+```bash
+python scripts/clear_db.py
+```
 
-Hệ thống được tích hợp sẵn công cụ đánh giá tự động bằng framework **Ragas** để đo lường độ hiệu quả của pipeline RAG qua các chỉ số:
-- **Faithfulness**: Độ trung thực của câu trả lời so với ngữ cảnh.
-- **Answer Relevancy**: Mức độ bám sát câu hỏi.
-- **Context Precision & Recall**: Độ chính xác và đầy đủ của tài liệu truy xuất.
-- **Answer Correctness**: Độ chính xác tổng thể so với đáp án chuẩn.
+---
 
-Để tiến hành đánh giá, hãy đảm bảo bạn đã cung cấp biến `GROQ_API_KEY` trong file `.env` và chạy lệnh:
+### 4. Đánh giá hệ thống (RAGAS Evaluation)
+
+Pipeline đánh giá sử dụng bộ câu hỏi `evaluation/optimization_dataset.json` (tiếng Việt) với 2 metrics:
+
+| Metric | Mô tả |
+|---|---|
+| **Faithfulness** | Câu trả lời có trung thực với context được truy xuất không? |
+| **Context Recall** | Context có đủ để trả lời theo ground truth không? |
+
+**Chạy đánh giá:**
 ```bash
 python evaluation/run_eval.py
 ```
-*(Kết quả chi tiết và các biểu đồ trực quan như Radar Chart, Heatmap sẽ được lưu vào thư mục `evaluation/results/`)*
+
+Kết quả lưu tại `evaluation/results/`:
+- `ragas_results_latest.json` — điểm từng mẫu
+- `ragas_summary_latest.json` — tóm tắt điểm trung bình
+- `ragas_metrics_chart.png` — Bar Chart + Radar Chart
+- `ragas_heatmap.png` — Heatmap điểm theo từng mẫu
+
+**Kết quả đánh giá mới nhất** *(5 mẫu — 02/06/2026)*:
+
+| Metric | Điểm | Đánh giá |
+|---|---|---|
+| **Faithfulness** | **0.8095** | ✅ Tốt |
+| **Context Recall** | **0.6571** | 🟡 Khá |
+| **Overall Score** | **0.7333** | ✅ Tốt |
+
+> **Nhận xét**: Faithfulness cao (0.81) cho thấy câu trả lời bám sát ngữ cảnh, ít hallucination. Context Recall (0.66) còn dư địa cải thiện — retriever đôi khi bỏ sót một số thông tin cần thiết.
 
 <div align="center">
-  <img src="evaluation/results/ragas_metrics_chart.png" alt="Ragas Metrics Chart" width="800">
+  <img src="evaluation/results/ragas_metrics_chart.png" alt="RAGAS Metrics Chart" width="800">
 </div>
 
 ---
 
-## Triển khai bằng Docker (Production)
+## Triển khai bằng Docker
 
-Để chạy dự án một cách chuyên nghiệp và độc lập, hãy sử dụng Docker.
-
-**Build Image:**
 ```bash
 docker build -t rag-chatbot-app .
-```
 
-**Run Container:**
-```bash
-docker run -d -p 8000:8000 \
+docker run -d -p 7860:7860 \
   --env-file .env \
   -v $(pwd)/data:/app/data \
   -v $(pwd)/VectorDB:/app/VectorDB \
   --name rag-container \
   rag-chatbot-app
 ```
-*Truy cập UI Chatbot tại: `http://localhost:8000`*
+
+*Truy cập tại: `http://localhost:7860`*
+
+

@@ -1,19 +1,13 @@
 {
-  "evaluation_timestamp": "20260523_212654",
-  "total_samples": 3,
+  "evaluation_timestamp": "20260602_141024",
+  "total_samples": 5,
   "metrics_used": [
     "faithfulness",
-    "answer_relevancy",
-    "context_precision",
-    "context_recall",
-    "answer_correctness"
+    "context_recall"
   ],
   "average_scores": {
-    "faithfulness": 0.8888888888888888,
-    "answer_relevancy": NaN,
-    "context_precision": 0.9999999999,
-    "context_recall": 1.0,
-    "answer_correctness": 0.6258756903411157
+    "faithfulness": 0.8095238095238095,
+    "context_recall": 0.6571428571428571
   },
-  "overall_score": 0.8786911447825011
+  "overall_score": 0.7333333333333334
 }
