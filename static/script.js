@@ -6,7 +6,6 @@ const clearBtn = document.getElementById('clearBtn');
 
 let sessionId = 'web_session_' + Math.random().toString(36).substring(7);
 
-// Initialize marked options if needed (for markdown rendering)
 if(window.marked) {
     marked.setOptions({
         breaks: true,
@@ -19,16 +18,13 @@ chatForm.addEventListener('submit', async (e) => {
     const query = userInput.value.trim();
     if (!query) return;
 
-    // 1. Show user message
     appendMessage(query, 'user');
     userInput.value = '';
-    
-    // 2. Show typing indicator
+
     typingIndicator.classList.add('active');
     chatBox.scrollTop = chatBox.scrollHeight;
 
     try {
-        // 3. Call API
         const response = await fetch('/api/v1/chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -37,7 +33,6 @@ chatForm.addEventListener('submit', async (e) => {
         
         const data = await response.json();
         
-        // 4. Hide typing, show bot message
         typingIndicator.classList.remove('active');
         
         if (response.ok) {
@@ -60,7 +55,6 @@ function appendMessage(text, sender, isMarkdown = false) {
     if (isMarkdown && window.marked) {
         contentHtml = marked.parse(text);
     } else {
-        // Fallback if marked is not loaded
         contentHtml = text.replace(/\n/g, '<br>');
     }
 
@@ -80,9 +74,8 @@ function appendMessage(text, sender, isMarkdown = false) {
 }
 
 clearBtn.addEventListener('click', () => {
-    // Keep only the first welcome message
     while (chatBox.children.length > 1) {
         chatBox.removeChild(chatBox.lastChild);
     }
-    sessionId = 'web_session_' + Math.random().toString(36).substring(7); // reset session
+    sessionId = 'web_session_' + Math.random().toString(36).substring(7); 
 });
