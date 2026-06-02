@@ -4,7 +4,6 @@ from langchain_core.output_parsers import StrOutputParser
 from app.core.config import get_llm, SUPABASE_DATABASE_URL
 from app.core.prompt import MEMORY_CONTEXTUALIZE_PROMPT
 
-# Bộ lưu trữ dự phòng trong RAM khi không kết nối được Database
 history_store = {}
 
 def get_session_history(session_id: str):
@@ -45,8 +44,7 @@ def contextualize_user_query(raw_query: str, session_id: str) -> str:
         return raw_query
 
     llm = get_llm(temperature=0.0)
-    
-    # Extract only the last 4 messages to avoid token limit and distraction
+
     recent_messages = history.messages[-4:]
     history_str = "\n".join([f"{'User' if m.type == 'human' else 'AI'}: {m.content}" for m in recent_messages])
     
