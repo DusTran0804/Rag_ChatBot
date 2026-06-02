@@ -7,15 +7,12 @@ from fastapi import APIRouter, HTTPException, BackgroundTasks
 from app.schema.model import ChatRequest, ChatResponse
 from app.service.agent import run_advanced_rag_agent
 
-# Set up logging for API routes
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
-# Thư mục gốc dự án
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# Thread-safe lock và status cho evaluation
 eval_lock = threading.Lock()
 eval_status = {"status": "idle", "message": "Sẵn sàng"}
 
@@ -27,7 +24,6 @@ def run_evaluation_task(limit: int = None):
         
     try:
         from evaluation.evaluate import main as run_evaluation_main
-        # Chạy evaluate
         run_evaluation_main(limit=limit)
         with eval_lock:
             eval_status["status"] = "idle"
@@ -109,8 +105,7 @@ async def get_evaluation_history():
                     history.append(json.load(f))
             except Exception as e:
                 logger.warning(f"Lỗi khi đọc file lịch sử {file}: {e}")
-                
-        # Sắp xếp lịch sử theo timestamp giảm dần
+
         history = sorted(history, key=lambda x: x.get("evaluation_timestamp", ""), reverse=True)
         return history
     except Exception as e:
