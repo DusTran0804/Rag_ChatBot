@@ -42,7 +42,7 @@ flowchart TD
     QR -- "COMPLEX" --> QT["Sub-query Decomposition\ntách thành ≤3 sub-queries"]
     QT --> RET
 
-    RET["🔍 Hybrid Retrieval\ntìm kiếm song song trên Qdrant\n+ deduplication"] --> RRK["Re-ranking\nCross-Encoder scoring\nchọn top-3 context"]
+    RET["Hybrid Retrieval\ntìm kiếm song song trên Qdrant\n+ deduplication"] --> RRK["Re-ranking\nCross-Encoder scoring\nchọn top-3 context"]
 
     RRK --> GEN["Generator\nLLaMA 3.3 70B via Groq"]
     GEN --> ANS([Answer])
