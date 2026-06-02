@@ -36,7 +36,6 @@
             overflow-x: hidden;
         }
 
-        /* Header */
         header {
             background-color: rgba(30, 41, 59, 0.8);
             backdrop-filter: blur(12px);
@@ -105,7 +104,6 @@
             border-color: var(--text-muted);
         }
 
-        /* Container & Layout */
         .container {
             max-width: 1400px;
             width: 100%;
@@ -117,7 +115,6 @@
             gap: 30px;
         }
 
-        /* Top Controls section */
         .control-panel {
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -200,7 +197,6 @@
             100% { transform: scale(1); opacity: 1; }
         }
 
-        /* Overview Summary Grid */
         .metrics-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -259,7 +255,6 @@
         .badge-acceptable { background-color: rgba(245, 158, 11, 0.15); color: var(--warning); }
         .badge-poor { background-color: rgba(239, 68, 68, 0.15); color: var(--danger); }
 
-        /* Visualization Section */
         .viz-section {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
@@ -295,7 +290,6 @@
             align-items: center;
         }
 
-        /* Detailed Table Section */
         .table-section {
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -389,7 +383,6 @@
         .score-acceptable { color: var(--warning); }
         .score-poor { color: var(--danger); }
 
-        /* Modal styling */
         .modal {
             display: none;
             position: fixed;
@@ -523,7 +516,6 @@
             line-height: 1.5;
         }
 
-        /* Empty state and loaders */
         .loading-overlay {
             display: flex;
             flex-direction: column;
@@ -570,7 +562,6 @@
     </header>
 
     <div class="container">
-        <!-- Control Panel -->
         <div class="control-panel">
             <div class="control-left">
                 <span class="status-badge status-idle" id="evalStatusBadge">
@@ -593,7 +584,6 @@
             </div>
         </div>
 
-        <!-- Metrics Overview Grid -->
         <div class="metrics-grid" id="metricsGrid">
             <div class="metric-card overall">
                 <span class="metric-title">Overall Score</span>
@@ -627,7 +617,6 @@
             </div>
         </div>
 
-        <!-- Visualization Charts Row -->
         <div class="viz-section">
             <div class="chart-card">
                 <div class="chart-title">Điểm Trung Bình RAGAS</div>
@@ -643,7 +632,6 @@
             </div>
         </div>
 
-        <!-- Detailed Table -->
         <div class="table-section">
             <div class="table-header-row">
                 <h2 class="table-title">Chi Tiết Kết Quả Từng Mẫu Thử</h2>
@@ -675,7 +663,6 @@
         </div>
     </div>
 
-    <!-- Modal for Detailed view -->
     <div class="modal" id="detailsModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -684,7 +671,6 @@
             </div>
             <div class="modal-body">
                 <div class="modal-scores" id="modalScores">
-                    <!-- Dynamic modal scores -->
                 </div>
                 
                 <div class="modal-section">
@@ -712,13 +698,11 @@
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        // Global variables to store charts
         let barChart = null;
         let radarChart = null;
         let evaluationResults = [];
         let pollingInterval = null;
 
-        // Dom Elements
         const historySelect = document.getElementById('historySelect');
         const runEvalBtn = document.getElementById('runEvalBtn');
         const evalStatusBadge = document.getElementById('evalStatusBadge');
@@ -726,7 +710,6 @@
         const resultsTableBody = document.getElementById('resultsTableBody');
         const searchInput = document.getElementById('searchInput');
 
-        // Modal Elements
         const detailsModal = document.getElementById('detailsModal');
         const closeModalBtn = document.getElementById('closeModalBtn');
         const modalTitle = document.getElementById('modalTitle');
@@ -736,7 +719,6 @@
         const modalContexts = document.getElementById('modalContexts');
         const modalGroundTruth = document.getElementById('modalGroundTruth');
 
-        // Threshold badges helper
         function getBadgeClass(val) {
             if (val === null || val === undefined || isNaN(val)) return 'badge-poor';
             if (val >= 0.7) return 'badge-good';
@@ -763,7 +745,6 @@
             return val.toFixed(3);
         }
 
-        // Initialize Charts
         function initCharts(scores) {
             const labels = ['Faithfulness', 'Answer Rel.', 'Ctx Precision', 'Ctx Recall', 'Correctness'];
             const dataValues = [
@@ -777,11 +758,9 @@
             const barCtx = document.getElementById('barChart').getContext('2d');
             const radarCtx = document.getElementById('radarChart').getContext('2d');
 
-            // Destroy existing charts
             if (barChart) barChart.destroy();
             if (radarChart) radarChart.destroy();
 
-            // Colors mapping based on scores
             const borderColors = labels.map((_, i) => dataValues[i] >= 0.7 ? '#10b981' : (dataValues[i] >= 0.5 ? '#f59e0b' : '#ef4444'));
             const backgroundColors = labels.map((_, i) => dataValues[i] >= 0.7 ? 'rgba(16, 185, 129, 0.4)' : (dataValues[i] >= 0.5 ? 'rgba(245, 158, 11, 0.4)' : 'rgba(239, 68, 68, 0.4)'));
 
@@ -855,7 +834,6 @@
             });
         }
 
-        // Render Summary Cards
         function updateSummaryCards(summary) {
             const scores = summary.average_scores || {};
             const overall = summary.overall_score || 0;
@@ -887,7 +865,6 @@
             initCharts(scores);
         }
 
-        // Render Results Table
         function renderTable(results) {
             resultsTableBody.innerHTML = '';
             
@@ -914,14 +891,12 @@
             });
         }
 
-        // Show detailed modal
         function showRowDetails(row, id) {
             modalTitle.textContent = `Chi Tiết Đánh Giá Mẫu Thử #${id}`;
             modalQuestion.textContent = row.question;
             modalAnswer.textContent = row.answer;
             modalGroundTruth.textContent = row.ground_truth;
 
-            // Render contexts
             modalContexts.innerHTML = '';
             const contexts = row.contexts || [];
             if (contexts.length === 0) {
@@ -935,7 +910,6 @@
                 });
             }
 
-            // Render scores
             modalScores.innerHTML = `
                 <div class="modal-score-item">
                     <span class="modal-score-name">Faithfulness</span>
@@ -962,14 +936,12 @@
             detailsModal.classList.add('active');
         }
 
-        // Fetch details from latest or specific history file
         async function fetchEvaluationData(type = 'latest') {
             try {
                 let url = '/api/v1/evaluation/latest';
                 if (type !== 'latest') {
-                    // Search in history results
                     const histData = historySelect.value;
-                    url = `/api/v1/evaluation/latest`; // Note: endpoint handles returning the selected or default latest
+                    url = `/api/v1/evaluation/latest`; 
                 }
                 
                 const response = await fetch(url);
@@ -991,7 +963,6 @@
             }
         }
 
-        // Fetch evaluation running status
         async function checkStatus() {
             try {
                 const response = await fetch('/api/v1/evaluation/status');
@@ -1003,7 +974,6 @@
                 if (data.status === 'running') {
                     runEvalBtn.disabled = true;
                     runEvalBtn.innerHTML = '<span class="spinner" style="width: 16px; height: 16px; border-width: 2px;"></span> Đang chạy đánh giá...';
-                    // Start polling if not already started
                     if (!pollingInterval) {
                         pollingInterval = setInterval(checkStatus, 3000);
                     }
@@ -1014,7 +984,6 @@
                             <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg>
                             Chạy Đánh Giá Mới (Mini - 3 câu)
                         `;
-                        // Reload data once evaluation finishes
                         fetchEvaluationData();
                         loadHistory();
                     }
@@ -1028,13 +997,11 @@
             }
         }
 
-        // Load runs history
         async function loadHistory() {
             try {
                 const response = await fetch('/api/v1/evaluation/history');
                 const list = await response.json();
-                
-                // Clear existing options except default "latest"
+            
                 historySelect.innerHTML = '<option value="latest">Kết quả mới nhất</option>';
                 
                 list.forEach(item => {
@@ -1053,7 +1020,6 @@
             }
         }
 
-        // Trigger Evaluation run
         async function triggerEvaluation() {
             try {
                 runEvalBtn.disabled = true;
@@ -1062,8 +1028,7 @@
                 
                 evalStatusBadge.className = `status-badge status-running`;
                 evalStatusText.textContent = data.message;
-                
-                // Start polling
+
                 checkStatus();
             } catch (err) {
                 console.error(err);
@@ -1072,7 +1037,6 @@
             }
         }
 
-        // Event Listeners
         runEvalBtn.addEventListener('click', triggerEvaluation);
         
         closeModalBtn.addEventListener('click', () => {
@@ -1099,15 +1063,9 @@
             if (historySelect.value === 'latest') {
                 fetchEvaluationData('latest');
             } else {
-                // Fetch historical specific data
-                // In full implementation, api could return specific runs. For simplicity, we fetch latest or we look for it
-                // To keep it fully functional, we can fetch latest. If we want history support, api can return run details.
-                // Let's implement history loading in the API as well
-                fetch(`/api/v1/evaluation/latest`) // We can query specific parameters or load dynamically
+                fetch(`/api/v1/evaluation/latest`) 
                     .then(res => res.json())
                     .then(data => {
-                        // Note: to fetch specific history in a real app, you can pass ?timestamp=value.
-                        // Let's make sure our routes support this parameter.
                         const timestamp = historySelect.value;
                         fetch(`/api/v1/evaluation/latest?timestamp=${timestamp}`)
                             .then(res => res.json())
@@ -1119,8 +1077,6 @@
                     });
             }
         });
-
-        // Initialize on load
         fetchEvaluationData();
         checkStatus();
         loadHistory();
