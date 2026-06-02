@@ -63,8 +63,7 @@ def apply_post_retrieval_rerank(user_query: str, retrieved_texts: str, top_n: in
     rerank_model = get_rerank_model()
     pairs = [[user_query, doc] for doc in doc_list]
     scores = rerank_model.predict(pairs)
-    
-    # Xử lý trường hợp model trả về mảng 2 chiều (logits cho [irrelevant, relevant])
+
     if len(scores.shape) > 1 and scores.shape[1] > 1:
         scores = scores[:, 1]
     elif len(scores.shape) > 1 and scores.shape[1] == 1:
