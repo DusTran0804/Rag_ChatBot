@@ -25,7 +25,7 @@ flowchart TD
     %% Ingestion Pipeline
     subgraph Ingestion ["Offline Data Ingestion"]
         direction LR
-        A1((Actor)) --> B1[MD5 Checkpoint\nBỏ qua file đã xử lý]
+        A1((Actor)) --> B1[MD5 Checkpoint]
         B1 --> B2[Load Document\n.pdf .docx .txt .csv .md]
         B2 --> C1[Semantic Chunker\nbkai-vi-encoder]
         C1 --> D1[Embedding\n768-dim vectors]
