@@ -43,9 +43,9 @@ flowchart TD
     QR -- "COMPLEX" --> QT["Sub-query Decomposition\ntách thành ≤3 sub-queries"]
     QT --> RET
 
-    RET["Hybrid Retrieval"] --> RRK["Re-ranking\nCross-Encoder scoring\nchọn top-3 context"]
+    RET["Hybrid Retrieval"] --> RRK["Re-ranking\nCross-Encoder scoring"]
 
-    RRK --> GEN["Generator\nLLaMA 3.3 70B via Groq"]
+    RRK --> GEN["Generator"]
     GEN --> ANS([Answer])
 
     ANS --> DB[("Chat History\nSupabase / RAM fallback")]
