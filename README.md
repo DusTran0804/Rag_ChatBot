@@ -25,8 +25,9 @@ flowchart TD
     %% Ingestion Pipeline
     subgraph Ingestion ["Offline Data Ingestion"]
         direction LR
-        A1((Actor)) --> B1[Load Document\n.pdf .docx .txt .csv .md]
-        B1 --> C1[Semantic Chunker\nbkai-vi-encoder]
+        A1((Actor)) --> B1[MD5 Checkpoint\nBỏ qua file đã xử lý]
+        B1 --> B2[Load Document\n.pdf .docx .txt .csv .md]
+        B2 --> C1[Semantic Chunker\nbkai-vi-encoder]
         C1 --> D1[Embedding\n768-dim vectors]
     end
 
@@ -156,6 +157,8 @@ Hỗ trợ đọc các định dạng:
 | `.txt` | `TextLoader` |
 | `.csv` | `CSVLoader` |
 | `.md` | `UnstructuredMarkdownLoader` |
+
+**Tính năng MD5 Checkpoint**: Hệ thống tính toán và lưu mã băm (MD5) của các file đã nạp vào `VectorDB/ingest_checkpoint.json`. Ở các lần chạy sau, hệ thống sẽ tự động đối chiếu và bỏ qua các file chưa bị thay đổi nội dung, giúp tiết kiệm tối đa thời gian embedding và ngăn chặn việc nạp trùng lặp vào Vector DB.
 
 Sử dụng **Semantic Chunker** (`langchain-experimental`) với ngưỡng `breakpoint_threshold_amount=0.8` để chia tài liệu dựa trên nghĩa, không phải độ dài cố định.
 
