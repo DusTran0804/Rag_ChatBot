@@ -22,33 +22,23 @@ Hệ thống Chatbot RAG (Retrieval-Augmented Generation) thông minh, xây dự
 
 ```mermaid
 flowchart TD
-    %% Ingestion Pipeline
-    subgraph Ingestion ["Offline Data Ingestion"]
+    %% Row 1: Offline Ingestion
+    subgraph Ingestion ["1. Offline Data Ingestion Pipeline"]
         direction LR
-        A1((Actor)) --> B1[MD5 Checkpoint]
-        B1 --> B2[Load Document\n.pdf .docx .txt .csv .md]
-        B2 --> C1[Semantic Chunker\nbkai-vi-encoder]
-        C1 --> D1[Embedding\n768-dim vectors]
+        A1((Actor)) --> B1[MD5 Checkpoint] --> B2[Load Doc\n.pdf .docx .txt .csv .md] --> C1[Semantic Chunker\nbkai-vi-encoder] --> D1[Embedding\n768-dim] --> VDB[(Qdrant Vector DB)]
     end
 
-    D1 -- "Lưu vào Qdrant\n(dense vectors)" --> VDB[(Qdrant\nVector DB)]
+    %% Row 2: Online Query
+    subgraph Query ["2. Online Retrieval & Generation Pipeline"]
+        direction LR
+        U1((Client)) --> Q1[Raw Query] --> MEM[Memory Rewrite] --> QR{Logical Router}
+        QR -- "SIMPLE" --> RET[Hybrid Retrieval]
+        QR -- "COMPLEX" --> QT[Sub-query Decompose] --> RET
+        RET --> RRK[Re-ranking\nCross-Encoder] --> GEN[Generator] --> ANS([Answer]) --> DB[(Chat History)]
+    end
 
-    %% Query Pipeline
-    U1((Client)) --> Q1([Raw Query])
-
-    Q1 --> MEM["Memory Contextualize\nQuery Rewrite nếu có lịch sử"]
-    MEM --> QR["Logical Router\nphân loại: SIMPLE / COMPLEX\nchỉ định index: ky_thuat / doanh_nghiep / chung"]
-
-    QR -- "SIMPLE" --> RET
-    QR -- "COMPLEX" --> QT["Sub-query Decomposition\ntách thành ≤3 sub-queries"]
-    QT --> RET
-
-    RET["Hybrid Retrieval"] --> RRK["Re-ranking\nCross-Encoder scoring"]
-
-    RRK --> GEN["Generator"]
-    GEN --> ANS([Answer])
-
-    ANS --> DB[("Chat History\nSupabase / RAM fallback")]
+    %% Connection between Ingestion & Query
+    VDB -.- RET
 ```
 
 ---
