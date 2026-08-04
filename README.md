@@ -23,13 +23,12 @@ Hệ thống Chatbot RAG (Retrieval-Augmented Generation) thông minh, xây dự
 ```mermaid
 flowchart TD
     %% Ingestion Pipeline
-    subgraph Ingestion ["Offline Data Ingestion"]
+    Ingestion ["Offline Data Ingestion"]
         direction LR
         A1((Actor)) --> B1[MD5 Checkpoint]
         B1 --> B2[Load Document\n.pdf .docx .txt .csv .md]
         B2 --> C1[Semantic Chunker\nbkai-vi-encoder]
         C1 --> D1[Embedding\n768-dim vectors]
-    end
 
     D1 -- "Lưu vào Qdrant\n(dense vectors)" --> VDB[(Qdrant\nVector DB)]
 
